@@ -107,8 +107,8 @@ h1{margin:2px 0 0;font:700 34px/1.1 var(--display);letter-spacing:.012em}
 /* scene pills (Apple Home "Scenes") */
 .pills{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pillb{display:flex;align-items:center;gap:12px;height:64px;padding:0 14px 0 10px;border-radius:var(--r-md);text-align:left;font-size:16px;font-weight:600;overflow:hidden}
-.pillb .dot{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff}
-.pillb .dot .i{width:22px;height:22px}
+.pillb .pdot{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff}
+.pillb .pdot .i{width:22px;height:22px}
 .pillb span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pillb.active{background:var(--on-bg);color:var(--on-text)}
 
@@ -304,6 +304,7 @@ h1{margin:2px 0 0;font:700 34px/1.1 var(--display);letter-spacing:.012em}
 main{display:block}
 .page{padding-top:0}
 .cols{display:grid;gap:0 24px}
+.cols>div{min-width:0}
 .side{display:none}
 @media(min-width:1000px){
   body{padding-bottom:40px;padding-left:220px}
@@ -1090,7 +1091,7 @@ function renderHome(){
   if (S.running.music) banners.push(`<div class="banner glass"><span class="ic">${icon("music")}</span><div class="mid"><b>Music sync</b><small>${S.running.music.lamps.length} lamps</small></div><button data-stop="music">Stop</button></div>`);
   if (S.running.effect) banners.push(`<div class="banner glass"><span class="ic">${icon("sparkles")}</span><div class="mid"><b>${esc({cycle: "Rainbow", party: "Party", candle: "Candle", chase: "Chase"}[S.running.effect.type] || "Effect")}</b><small>${S.running.effect.lamps.length} lamps</small></div><button data-stop="effect">Stop</button></div>`);
   $("#banners").innerHTML = banners.join("");
-  $("#pills").innerHTML = QUICK.map(mood).filter(Boolean).map(m => `<button class="pillb ${S.lastMood === m.id ? "active" : "glass"}" data-theme="${esc(m.id)}"><span class="dot" style="background:${css(avgPreview(m))}">${icon(mIcon(m))}</span><span>${esc(m.name)}</span></button>`).join("");
+  $("#pills").innerHTML = QUICK.map(mood).filter(Boolean).map(m => `<button class="pillb ${S.lastMood === m.id ? "active" : "glass"}" data-theme="${esc(m.id)}"><span class="pdot" style="background:${css(avgPreview(m))}">${icon(mIcon(m))}</span><span>${esc(m.name)}</span></button>`).join("");
   $("#zoneTiles").innerHTML = ZONES.filter(z => zoneDevs(z).length).map(z => tileHTML(`data-zone="${z.key}"`, z.name, zoneDevs(z).map(d => d.id), z.icon)).join("");
   renderRoom($("#homeRoom"));
   if (B.note) B.note();
