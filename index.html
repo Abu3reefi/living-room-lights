@@ -342,6 +342,19 @@ main{display:block}
 .hero.dark .hero-ic{background:rgba(255,255,255,.14)}
 .hero.dark .tick{background:#fff;color:#111}
 
+/* remote buttons */
+.remote{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.rbtn{min-width:0;min-height:74px;border-radius:20px;display:flex;align-items:center;gap:12px;padding:10px 14px;text-align:left;font-weight:600;font-size:16px;line-height:1.15}
+.rbtn .ric{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.14);color:#fff}
+.rbtn .ric .i{width:22px;height:22px}
+.rbtn .rtx{min-width:0}
+.rbtn .rtx small{display:block;font-size:12.5px;font-weight:500;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rbtn.active{background:var(--on-bg);color:var(--on-text)}
+.rbtn.active .rtx small{color:rgba(17,17,20,.55)}
+.rbtn.off .ric{background:rgba(255,255,255,.08);color:var(--text2)}
+.hero{margin-top:16px}
+@media(min-width:1000px){.remote{grid-template-columns:repeat(3,1fr)}}
+
 /* live room map */
 .room{position:relative;aspect-ratio:var(--ratio,1.6);border:5px solid #4a4138;border-radius:8px;background:radial-gradient(circle at 50% 50%,#221d18,#1d1915 70%);overflow:hidden;user-select:none;-webkit-user-select:none}
 .room .fixtures{position:absolute;inset:0;pointer-events:none}
@@ -490,12 +503,12 @@ main{display:block}
   <div class="chips" id="chips"></div>
   <div class="cols">
     <div>
-      <div class="head" style="margin-top:22px"><h2>Today</h2><button data-go="more" data-sub="timers">Schedule <span class="chev"></span></button></div>
-      <div class="today" id="today"></div>
-      <button class="hero" id="heroBtn"></button>
-      <div class="duo"><button class="pbtn glass" id="allOn"></button><button class="pbtn glass off" id="allOff"></button></div>
+      <button class="hero" id="fullBright"><span class="hero-ic"></span><span class="hero-tx"><b>Full Bright</b><small class="num">2700 K · 100% · every lamp</small></span><span class="tick"></span></button>
+      <div class="remote" id="remote"></div>
       <div class="hslider glass" id="homeBri"></div>
       <div id="banners"></div>
+      <div class="head"><h2>Your day</h2><button data-go="more" data-sub="timers">Schedule <span class="chev"></span></button></div>
+      <div class="remote" id="stages"></div>
       <div class="head"><h2>Quick themes</h2><button data-go="themes">All <span class="chev"></span></button></div>
       <div class="pills" id="pills"></div>
     </div>
@@ -1046,10 +1059,8 @@ function lightSheet(title, ids, iconName, subtitle = ""){
 
 /* =================== HOME =================== */
 $("#hdrOff").innerHTML = icon("power");
-$("#allOn").innerHTML = icon("bulb") + "All On";
-$("#allOff").innerHTML = icon("power") + "All Off";
-$("#allOn").onclick = () => { control("all", {on: true}); hud("All lights on", "bulb"); };
-$("#allOff").onclick = $("#hdrOff").onclick = () => { control("all", {on: false}); hud("All lights off", "power"); };
+$("#fullBright .hero-ic").innerHTML = icon("sun"); $("#fullBright .tick").innerHTML = icon("check");
+$("#hdrOff").onclick = () => { control("all", {on: false}); hud("All lights off", "power"); };
 const homeBri = slider($("#homeBri"), {value: 60, onChange: v => control("all", {brightness: v})});
 function greeting(){ const h = new Date().getHours(); return h < 5 ? "Good night" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; }
 function tileHTML(attrs, name, ids, ic, status){
@@ -1081,12 +1092,21 @@ function renderHome(){
   $("#chips").innerHTML = chips.join("");
   if (L.length) homeBri.setValue(avgBri(L));
 
-  // today: the stage strip + the "next" hero
-  const curIdx = stages.findIndex(s => s.id === S.stage), next = stages.length ? stages[(curIdx + 1) % stages.length] : null;
-  $("#today").innerHTML = stages.map((s, i) => { const m = mood(s.moodId) || {}; return `<button class="stage ${i === curIdx ? "now" : i < curIdx ? "done glass" : "glass"}" data-stage="${esc(s.id)}">${icon(mIcon(m))}${esc(s.name)}</button>`; }).join("");
-  if (next) { const m = mood(next.moodId) || {}, dark = next.moodId === "off";
-    $("#heroBtn").className = `hero ${dark ? "dark" : ""}`; $("#heroBtn").dataset.stage = next.id;
-    $("#heroBtn").innerHTML = `<span class="hero-ic">${icon(mIcon(m))}</span><span class="hero-tx"><span class="kick">${curIdx < 0 ? "Start the day" : "Next up"}</span><b>${esc(next.name)}</b><small>${esc(m.blurb || m.name || "")}${next.fade ? ` · ${next.fade} min fade` : ""}</small></span><span class="tick">${icon("next")}</span>`; }
+  $("#fullBright").classList.toggle("active", S.lastMood === "full");
+  // the remote: direct buttons for the things you do most, each showing its current state
+  const ceil = zoneDevs(ZONES.find(z => z.key === "ceiling")), floor = S.devices.filter(d => d.zone !== "ceiling");
+  const ceilOn = ceil.some(lit), floorOn = floor.some(lit), allOn = S.devices.some(lit);
+  const rb = (id, ic, label, sub, cls = "") => `<button class="rbtn glass ${cls}" data-remote="${id}"><span class="ric">${icon(ic)}</span><span class="rtx">${label}<small>${sub}</small></span></button>`;
+  $("#remote").innerHTML = [
+    rb("ceiling", "spot", ceilOn ? "Ceiling off" : "Ceiling on", `${ceil.filter(lit).length} of ${ceil.length} on`, ceilOn ? "" : "off"),
+    rb("floor", "lamp", floorOn ? "Lamps off" : "Lamps on", `${floor.filter(lit).length} of ${floor.length} on`, floorOn ? "" : "off"),
+    rb("dim", "sun-low", "Dim", "everything to 30%"),
+    rb("warm", "flame", "Warm white", "2700 K, keep brightness"),
+    rb("allon", "bulb", "All on", `${S.devices.length} lamps`),
+    rb("alloff", "power", "All off", allOn ? "" : "everything is off", allOn ? "" : "off"),
+  ].join("");
+  $("#stages").innerHTML = stages.filter(s => s.moodId !== "full").map(s => { const m = mood(s.moodId) || {}; const c = css(avgPreview(m));
+    return `<button class="rbtn ${S.lastMood === s.moodId ? "active" : "glass"}" data-stage="${esc(s.id)}"><span class="ric" style="background:${c};color:${pale(avgPreview(m)) ? "rgba(60,30,0,.75)" : "#fff"}">${icon(mIcon(m))}</span><span class="rtx">${esc(s.name)}<small>${esc(m.name)}${s.fade ? ` · ${s.fade} min fade` : ""}</small></span></button>`; }).join("");
 
   const banners = [];
   if (S.running.music) banners.push(`<div class="banner glass"><span class="ic">${icon("music")}</span><div class="mid"><b>Music sync</b><small>${S.running.music.lamps.length} lamps</small></div><button data-stop="music">Stop</button></div>`);
@@ -1097,8 +1117,20 @@ function renderHome(){
   renderRoom($("#homeRoom"));
   if (B.note) B.note();
 }
-$("#today").onclick = e => { const b = e.target.closest("[data-stage]"); if (!b) return; const s = C.routine.stages.find(x => x.id === b.dataset.stage); api("/api/routine/stage", {id: s.id}); hud(s.name, mIcon(mood(s.moodId) || {})); };
-$("#heroBtn").onclick = () => { const s = C.routine.stages.find(x => x.id === $("#heroBtn").dataset.stage); if (!s) return; api("/api/routine/stage", {id: s.id}); hud(s.name, mIcon(mood(s.moodId) || {})); };
+$("#stages").onclick = e => { const b = e.target.closest("[data-stage]"); if (!b) return; const s = C.routine.stages.find(x => x.id === b.dataset.stage); api("/api/routine/stage", {id: s.id}); hud(s.name, mIcon(mood(s.moodId) || {})); };
+$("#fullBright").onclick = () => { api("/api/mood/apply", {id: "full", fade: 1}); hud("Full Bright · 2700 K · 100%", "sun"); };
+$("#remote").onclick = e => {
+  const b = e.target.closest("[data-remote]"); if (!b) return;
+  const ceil = ["@ceiling"], floor = S.devices.filter(d => d.zone !== "ceiling").map(d => d.id);
+  ({
+    ceiling: () => { const on = zoneDevs(ZONES.find(z => z.key === "ceiling")).some(lit); control(ceil, {on: !on}); hud(on ? "Ceiling off" : "Ceiling on", "spot"); },
+    floor: () => { const on = S.devices.some(d => d.zone !== "ceiling" && lit(d)); control(floor, {on: !on}); hud(on ? "Lamps off" : "Lamps on", "lamp"); },
+    dim: () => { control("all", {brightness: 30}); hud("Dimmed to 30%", "sun-low"); },
+    warm: () => { control("all", {kelvin: 2700}); hud("Warm white", "flame"); },
+    allon: () => { control("all", {on: true}); hud("All lights on", "bulb"); },
+    alloff: () => { control("all", {on: false}); hud("All lights off", "power"); },
+  })[b.dataset.remote]();
+};
 $("#zoneTiles").onclick = e => { const t = e.target.closest("[data-zone]"); if (!t) return; const z = ZONES.find(x => x.key === t.dataset.zone), ds = zoneDevs(z), ids = ds.map(d => d.id);
   if (e.target.closest("[data-toggle]")) { const on = ds.some(lit); control(ids, {on: !on}); hud(`${z.name} ${on ? "off" : "on"}`, on ? "power" : "bulb"); return; }
   lightSheet(z.name, ids, z.icon, ds.map(d => d.name).join(" · ")); };
