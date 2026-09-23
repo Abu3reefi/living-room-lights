@@ -868,6 +868,7 @@ const Cloud = {
     const st = this.STATE[id] = this.STATE[id] || this.defaultState(), CAP = this.CAP;
     this.TOUCHED[id] = Date.now();
     if (t.on === false) { st.on = false; return this.send(id, CAP.power(false)); }
+    if (!st.on && !t.on) return Promise.resolve();  // adjustments never wake a lamp that's off
     const first = [], then = [];
     if (t.scene && this.SCENES[id]?.[t.scene]) {
       Object.assign(st, {on: true, mode: "scene", scene: t.scene}); first.push(CAP.scene(this.SCENES[id][t.scene]));
@@ -1104,7 +1105,7 @@ function lightSheet(title, ids, iconName, subtitle = ""){
     const val = sh.querySelector("#shVal"), pow = sh.querySelector("#shPow"), vs = sh.querySelector("#shV");
     const setOn = v => { pow.classList.toggle("on", v); val.classList.toggle("off", !v); if (!v) val.innerHTML = "Off"; };
     const showBri = v => { bri = v; val.classList.remove("off"); val.innerHTML = `${v}<span>%</span>`; pow.classList.add("on"); };
-    slider(vs, {value: on ? bri : 0, min: 0, max: 100, vertical: true, onInput: v => v ? showBri(v) : setOn(false), onChange: v => v ? control(ids, {brightness: v}) : control(ids, {on: false})});
+    slider(vs, {value: on ? bri : 0, min: 0, max: 100, vertical: true, onInput: v => v ? showBri(v) : setOn(false), onChange: v => v ? control(ids, {brightness: v, on: true}) : control(ids, {on: false})});
     pow.onclick = () => { const v = !pow.classList.contains("on"); setOn(v); if (v) { showBri(bri); vs.setValue(bri); } else vs.setValue(0); control(ids, {on: v}); };
     const paint = c => { vs.style.setProperty("--c", css(c)); sh.querySelector(".sh-head .ic").style.cssText = `background:${css(vivid(c))};color:#fff`; };
     const wake = () => { if (!pow.classList.contains("on")) { showBri(bri); vs.setValue(bri); } };
