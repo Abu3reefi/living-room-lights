@@ -127,9 +127,199 @@
  },
  "themes": [
   {
+   "id": "full",
+   "name": "Full Bright",
+   "icon": "sun",
+   "blurb": "Warm white at full power on every lamp — the sunlight the room doesn't get.",
+   "builtin": true,
+   "states": {
+    "*": {
+     "on": true,
+     "brightness": 100,
+     "kelvin": 2700
+    }
+   },
+   "group": "day"
+  },
+  {
+   "id": "soft",
+   "name": "Daytime Soft",
+   "icon": "sun-low",
+   "blurb": "The same warm white, turned down to a comfortable daytime level.",
+   "builtin": true,
+   "states": {
+    "*": {
+     "on": true,
+     "brightness": 55,
+     "kelvin": 2700
+    }
+   },
+   "group": "day"
+  },
+  {
+   "id": "lamps",
+   "name": "Lamps Only",
+   "icon": "lamp",
+   "blurb": "Ceiling off. The floor lamps carry the room in warm white.",
+   "builtin": true,
+   "states": {
+    "@ceiling": {
+     "on": false
+    },
+    "*": {
+     "on": true,
+     "brightness": 45,
+     "kelvin": 2700
+    }
+   },
+   "group": "day"
+  },
+  {
+   "id": "chill",
+   "name": "Chill Colours",
+   "icon": "sparkles",
+   "blurb": "Cosy with a little colour: amber at the door, peach and plum by the TV, teal at the desk, rose on the stairs.",
+   "builtin": true,
+   "states": {
+    "@door": {
+     "on": true,
+     "brightness": 60,
+     "color": {
+      "r": 255,
+      "g": 179,
+      "b": 71
+     }
+    },
+    "@tvLeft": {
+     "on": true,
+     "brightness": 45,
+     "color": {
+      "r": 255,
+      "g": 154,
+      "b": 118
+     }
+    },
+    "@tvRight": {
+     "on": true,
+     "brightness": 40,
+     "color": {
+      "r": 200,
+      "g": 107,
+      "b": 255
+     },
+     "scene": "Candlelight"
+    },
+    "@desk": {
+     "on": true,
+     "brightness": 40,
+     "color": {
+      "r": 63,
+      "g": 208,
+      "b": 201
+     }
+    },
+    "@kitchen": {
+     "on": true,
+     "brightness": 35,
+     "color": {
+      "r": 255,
+      "g": 207,
+      "b": 138
+     }
+    },
+    "@ceiling": {
+     "on": true,
+     "brightness": 8,
+     "color": {
+      "r": 255,
+      "g": 140,
+      "b": 66
+     }
+    },
+    "@stairs": {
+     "on": true,
+     "brightness": 35,
+     "color": {
+      "r": 255,
+      "g": 111,
+      "b": 145
+     }
+    }
+   },
+   "group": "day"
+  },
+  {
+   "id": "off",
+   "name": "Lights Out",
+   "icon": "moon",
+   "blurb": "Everything off.",
+   "builtin": true,
+   "states": {
+    "*": {
+     "on": false
+    }
+   },
+   "group": "day"
+  },
+  {
+   "id": "rainbowrow",
+   "name": "Rainbow Row",
+   "icon": "rainbow",
+   "blurb": "A colour sequence around the room, lamp by lamp, from the door to the stairs.",
+   "builtin": true,
+   "states": {},
+   "gradient": {
+    "stops": [
+     {
+      "r": 255,
+      "g": 59,
+      "b": 48
+     },
+     {
+      "r": 255,
+      "g": 149,
+      "b": 0
+     },
+     {
+      "r": 255,
+      "g": 214,
+      "b": 10
+     },
+     {
+      "r": 48,
+      "g": 209,
+      "b": 88
+     },
+     {
+      "r": 0,
+      "g": 199,
+      "b": 190
+     },
+     {
+      "r": 10,
+      "g": 132,
+      "b": 255
+     },
+     {
+      "r": 191,
+      "g": 90,
+      "b": 242
+     },
+     {
+      "r": 255,
+      "g": 45,
+      "b": 146
+     }
+    ],
+    "axis": "order",
+    "brightness": 55
+   },
+   "group": "room"
+  },
+  {
    "id": "golden",
    "name": "Golden Hour",
-   "emoji": "🌇",
+   "icon": "sunset",
    "blurb": "The Door sun glows like a low sun; everything else catches its warmth.",
    "builtin": true,
    "states": {
@@ -184,12 +374,13 @@
       "b": 61
      }
     }
-   }
+   },
+   "group": "room"
   },
   {
    "id": "cinema",
    "name": "Cinema",
-   "emoji": "🎬",
+   "icon": "film",
    "blurb": "Ceiling and door dark, soft blue bias light behind the TV, a glow on the stairs so no one trips.",
    "builtin": true,
    "states": {
@@ -238,12 +429,13 @@
       "b": 255
      }
     }
-   }
+   },
+   "group": "room"
   },
   {
    "id": "deepwork",
    "name": "Deep Work",
-   "emoji": "🧠",
+   "icon": "brain",
    "blurb": "Crisp daylight over the desk and ceiling, softer white elsewhere.",
    "builtin": true,
    "states": {
@@ -282,12 +474,13 @@
      "brightness": 35,
      "kelvin": 4000
     }
-   }
+   },
+   "group": "room"
   },
   {
    "id": "dinner",
    "name": "Dinner Party",
-   "emoji": "🍽️",
+   "icon": "fork",
    "blurb": "Bright warm kitchen, low candle-warm living room.",
    "builtin": true,
    "states": {
@@ -341,12 +534,231 @@
       "b": 107
      }
     }
-   }
+   },
+   "group": "room"
+  },
+  {
+   "id": "reading",
+   "name": "Cozy Reading",
+   "icon": "book",
+   "blurb": "Standing wood becomes a reading lamp; the rest of the room settles low and warm.",
+   "builtin": true,
+   "states": {
+    "@tvLeft": {
+     "on": true,
+     "brightness": 100,
+     "kelvin": 3000
+    },
+    "@tvRight": {
+     "on": true,
+     "brightness": 20,
+     "kelvin": 2700
+    },
+    "@door": {
+     "on": true,
+     "brightness": 20,
+     "kelvin": 2700
+    },
+    "@desk": {
+     "on": true,
+     "brightness": 20,
+     "kelvin": 2700
+    },
+    "@ceiling": {
+     "on": false
+    },
+    "@kitchen": {
+     "on": true,
+     "brightness": 15,
+     "kelvin": 2700
+    },
+    "@stairs": {
+     "on": true,
+     "brightness": 15,
+     "kelvin": 2700
+    }
+   },
+   "group": "room"
+  },
+  {
+   "id": "moonlight",
+   "name": "Moonlight",
+   "icon": "moon",
+   "blurb": "The Door sun becomes a pale moon over a deep-navy room.",
+   "builtin": true,
+   "states": {
+    "@door": {
+     "on": true,
+     "brightness": 30,
+     "kelvin": 6500
+    },
+    "@tvLeft": {
+     "on": true,
+     "brightness": 10,
+     "color": {
+      "r": 28,
+      "g": 44,
+      "b": 138
+     }
+    },
+    "@tvRight": {
+     "on": true,
+     "brightness": 10,
+     "color": {
+      "r": 42,
+      "g": 63,
+      "b": 176
+     },
+     "scene": "Starry Sky"
+    },
+    "@desk": {
+     "on": false
+    },
+    "@ceiling": {
+     "on": true,
+     "brightness": 5,
+     "color": {
+      "r": 14,
+      "g": 26,
+      "b": 92
+     }
+    },
+    "@kitchen": {
+     "on": false
+    },
+    "@stairs": {
+     "on": true,
+     "brightness": 8,
+     "color": {
+      "r": 64,
+      "g": 96,
+      "b": 255
+     }
+    }
+   },
+   "group": "room"
+  },
+  {
+   "id": "sunrise",
+   "name": "Sunrise Sweep",
+   "icon": "sunrise",
+   "blurb": "Deep red by the door rising to soft gold on the kitchen side.",
+   "builtin": true,
+   "states": {},
+   "gradient": {
+    "stops": [
+     {
+      "r": 255,
+      "g": 45,
+      "b": 0
+     },
+     {
+      "r": 255,
+      "g": 122,
+      "b": 0
+     },
+     {
+      "r": 255,
+      "g": 210,
+      "b": 122
+     }
+    ],
+    "axis": "x",
+    "brightness": 60
+   },
+   "group": "room"
+  },
+  {
+   "id": "aurora",
+   "name": "Northern Lights",
+   "icon": "sparkles",
+   "blurb": "Green to violet flowing across the room; the Aurora lamp plays the real thing.",
+   "builtin": true,
+   "states": {
+    "@tvRight": {
+     "on": true,
+     "brightness": 60,
+     "color": {
+      "r": 0,
+      "g": 200,
+      "b": 255
+     },
+     "scene": "Aurora"
+    }
+   },
+   "gradient": {
+    "stops": [
+     {
+      "r": 0,
+      "g": 255,
+      "b": 156
+     },
+     {
+      "r": 0,
+      "g": 200,
+      "b": 255
+     },
+     {
+      "r": 122,
+      "g": 60,
+      "b": 255
+     },
+     {
+      "r": 255,
+      "g": 60,
+      "b": 172
+     }
+    ],
+    "axis": "x",
+    "brightness": 50
+   },
+   "group": "room"
+  },
+  {
+   "id": "ocean",
+   "name": "Under the Sea",
+   "icon": "wave",
+   "blurb": "Bright turquoise along the TV wall fading to deep blue by the stairs.",
+   "builtin": true,
+   "states": {
+    "@tvRight": {
+     "on": true,
+     "brightness": 45,
+     "color": {
+      "r": 0,
+      "g": 102,
+      "b": 255
+     },
+     "scene": "Ocean"
+    }
+   },
+   "gradient": {
+    "stops": [
+     {
+      "r": 0,
+      "g": 224,
+      "b": 255
+     },
+     {
+      "r": 0,
+      "g": 102,
+      "b": 255
+     },
+     {
+      "r": 10,
+      "g": 31,
+      "b": 122
+     }
+    ],
+    "axis": "y",
+    "brightness": 45
+   },
+   "group": "room"
   },
   {
    "id": "neon",
    "name": "Neon Arcade",
-   "emoji": "🕹️",
+   "icon": "game",
    "blurb": "Magenta at the desk, cyan and violet around the TV — full game-room energy.",
    "builtin": true,
    "states": {
@@ -413,12 +825,13 @@
       "b": 200
      }
     }
-   }
+   },
+   "group": "room"
   },
   {
    "id": "rainforest",
    "name": "Rainforest",
-   "emoji": "🌿",
+   "icon": "leaf",
    "blurb": "Sun through the canopy at the door, layered greens across the room.",
    "builtin": true,
    "states": {
@@ -486,98 +899,13 @@
       "b": 160
      }
     }
-   }
-  },
-  {
-   "id": "moonlight",
-   "name": "Moonlight",
-   "emoji": "🌙",
-   "blurb": "The Door sun becomes a pale moon over a deep-navy room.",
-   "builtin": true,
-   "states": {
-    "@door": {
-     "on": true,
-     "brightness": 30,
-     "kelvin": 6500
-    },
-    "@tvLeft": {
-     "on": true,
-     "brightness": 10,
-     "color": {
-      "r": 28,
-      "g": 44,
-      "b": 138
-     }
-    },
-    "@tvRight": {
-     "on": true,
-     "brightness": 10,
-     "color": {
-      "r": 42,
-      "g": 63,
-      "b": 176
-     },
-     "scene": "Starry Sky"
-    },
-    "@desk": {
-     "on": false
-    },
-    "@ceiling": {
-     "on": true,
-     "brightness": 5,
-     "color": {
-      "r": 14,
-      "g": 26,
-      "b": 92
-     }
-    },
-    "@kitchen": {
-     "on": false
-    },
-    "@stairs": {
-     "on": true,
-     "brightness": 8,
-     "color": {
-      "r": 64,
-      "g": 96,
-      "b": 255
-     }
-    }
-   }
-  },
-  {
-   "id": "sunrise",
-   "name": "Sunrise Sweep",
-   "emoji": "🌅",
-   "blurb": "Deep red by the door rising to soft gold on the kitchen side — east is bright.",
-   "builtin": true,
-   "states": {},
-   "gradient": {
-    "stops": [
-     {
-      "r": 255,
-      "g": 45,
-      "b": 0
-     },
-     {
-      "r": 255,
-      "g": 122,
-      "b": 0
-     },
-     {
-      "r": 255,
-      "g": 210,
-      "b": 122
-     }
-    ],
-    "axis": "x",
-    "brightness": 60
-   }
+   },
+   "group": "room"
   },
   {
    "id": "desert",
    "name": "Desert Night",
-   "emoji": "🏜️",
+   "icon": "tent",
    "blurb": "Indigo sky overhead, amber lanterns around the edges.",
    "builtin": true,
    "states": {
@@ -645,174 +973,13 @@
       "b": 26
      }
     }
-   }
-  },
-  {
-   "id": "aurora",
-   "name": "Northern Lights",
-   "emoji": "🌌",
-   "blurb": "Green to violet flowing across the room; the Aurora lamp plays the real thing.",
-   "builtin": true,
-   "states": {
-    "@tvRight": {
-     "on": true,
-     "brightness": 60,
-     "color": {
-      "r": 0,
-      "g": 200,
-      "b": 255
-     },
-     "scene": "Aurora"
-    }
    },
-   "gradient": {
-    "stops": [
-     {
-      "r": 0,
-      "g": 255,
-      "b": 156
-     },
-     {
-      "r": 0,
-      "g": 200,
-      "b": 255
-     },
-     {
-      "r": 122,
-      "g": 60,
-      "b": 255
-     },
-     {
-      "r": 255,
-      "g": 60,
-      "b": 172
-     }
-    ],
-    "axis": "x",
-    "brightness": 50
-   }
-  },
-  {
-   "id": "ocean",
-   "name": "Under the Sea",
-   "emoji": "🐠",
-   "blurb": "Bright turquoise along the north wall fading to deep blue by the stairs.",
-   "builtin": true,
-   "states": {
-    "@tvRight": {
-     "on": true,
-     "brightness": 45,
-     "color": {
-      "r": 0,
-      "g": 102,
-      "b": 255
-     },
-     "scene": "Ocean"
-    }
-   },
-   "gradient": {
-    "stops": [
-     {
-      "r": 0,
-      "g": 224,
-      "b": 255
-     },
-     {
-      "r": 0,
-      "g": 102,
-      "b": 255
-     },
-     {
-      "r": 10,
-      "g": 31,
-      "b": 122
-     }
-    ],
-    "axis": "y",
-    "brightness": 45
-   }
-  },
-  {
-   "id": "snack",
-   "name": "Midnight Snack",
-   "emoji": "🥪",
-   "blurb": "Everything off except the kitchen and a dim path from the stairs.",
-   "builtin": true,
-   "states": {
-    "*": {
-     "on": false
-    },
-    "@kitchen": {
-     "on": true,
-     "brightness": 45,
-     "kelvin": 3000
-    },
-    "@stairs": {
-     "on": true,
-     "brightness": 12,
-     "color": {
-      "r": 255,
-      "g": 154,
-      "b": 64
-     }
-    },
-    "@door": {
-     "on": true,
-     "brightness": 5,
-     "color": {
-      "r": 255,
-      "g": 122,
-      "b": 42
-     }
-    }
-   }
-  },
-  {
-   "id": "reading",
-   "name": "Cozy Reading",
-   "emoji": "📖",
-   "blurb": "Standing wood becomes a reading lamp; the rest of the room settles low and warm.",
-   "builtin": true,
-   "states": {
-    "@tvLeft": {
-     "on": true,
-     "brightness": 100,
-     "kelvin": 3000
-    },
-    "@tvRight": {
-     "on": true,
-     "brightness": 20,
-     "kelvin": 2700
-    },
-    "@door": {
-     "on": true,
-     "brightness": 20,
-     "kelvin": 2700
-    },
-    "@desk": {
-     "on": true,
-     "brightness": 20,
-     "kelvin": 2700
-    },
-    "@ceiling": {
-     "on": false
-    },
-    "@kitchen": {
-     "on": true,
-     "brightness": 15,
-     "kelvin": 2700
-    },
-    "@stairs": {
-     "on": true,
-     "brightness": 15,
-     "kelvin": 2700
-    }
-   }
+   "group": "room"
   },
   {
    "id": "fireplace",
    "name": "Fireplace",
-   "emoji": "🔥",
+   "icon": "flame",
    "blurb": "Embers everywhere — reds and oranges at different depths.",
    "builtin": true,
    "states": {
@@ -880,51 +1047,51 @@
       "b": 0
      }
     }
-   }
+   },
+   "group": "room"
   },
   {
-   "id": "full",
-   "name": "Full Bright",
-   "emoji": "☀️",
+   "id": "snack",
+   "name": "Midnight Snack",
+   "icon": "cup",
+   "blurb": "Everything off except the kitchen and a dim path from the stairs.",
+   "builtin": true,
    "states": {
     "*": {
+     "on": false
+    },
+    "@kitchen": {
      "on": true,
-     "brightness": 100,
-     "kelvin": 2700
+     "brightness": 45,
+     "kelvin": 3000
+    },
+    "@stairs": {
+     "on": true,
+     "brightness": 12,
+     "color": {
+      "r": 255,
+      "g": 154,
+      "b": 64
+     }
+    },
+    "@door": {
+     "on": true,
+     "brightness": 5,
+     "color": {
+      "r": 255,
+      "g": 122,
+      "b": 42
+     }
     }
    },
-   "builtin": true
-  },
-  {
-   "id": "warm",
-   "name": "Warm Evening",
-   "emoji": "🕯️",
-   "states": {
-    "*": {
-     "on": true,
-     "brightness": 60,
-     "kelvin": 2700
-    }
-   },
-   "builtin": true
-  },
-  {
-   "id": "focus",
-   "name": "Bright White",
-   "emoji": "💡",
-   "states": {
-    "*": {
-     "on": true,
-     "brightness": 100,
-     "kelvin": 5000
-    }
-   },
-   "builtin": true
+   "group": "room"
   },
   {
    "id": "night",
    "name": "Night Light",
-   "emoji": "🌙",
+   "icon": "moon",
+   "blurb": "A barely-there orange glow on every lamp.",
+   "builtin": true,
    "states": {
     "*": {
      "on": true,
@@ -936,24 +1103,56 @@
      }
     }
    },
-   "builtin": true
+   "group": "room"
   },
   {
-   "id": "allred",
-   "name": "All Red",
-   "emoji": "❤️",
+   "id": "bright",
+   "name": "Bright White",
+   "icon": "bulb",
+   "blurb": "Cool white at full power.",
+   "builtin": true,
    "states": {
     "*": {
      "on": true,
-     "brightness": 60,
-     "color": {
-      "r": 255,
-      "g": 26,
-      "b": 26
-     }
+     "brightness": 100,
+     "kelvin": 5000
     }
    },
-   "builtin": true
+   "group": "room"
   }
- ]
+ ],
+ "routine": {
+  "stages": [
+   {
+    "id": "morning",
+    "name": "Morning",
+    "moodId": "full",
+    "fade": 0
+   },
+   {
+    "id": "day",
+    "name": "Daytime",
+    "moodId": "soft",
+    "fade": 5
+   },
+   {
+    "id": "evening",
+    "name": "Evening",
+    "moodId": "lamps",
+    "fade": 5
+   },
+   {
+    "id": "chill",
+    "name": "Chill",
+    "moodId": "chill",
+    "fade": 10
+   },
+   {
+    "id": "night",
+    "name": "Lights out",
+    "moodId": "off",
+    "fade": 60
+   }
+  ]
+ }
 }

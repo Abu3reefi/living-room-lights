@@ -11,7 +11,7 @@
 <meta name="color-scheme" content="dark">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
-<title>Lights</title>
+<title>Living Room Lights</title>
 <style>
 
 /* ============================================================
@@ -296,20 +296,155 @@ h1{margin:2px 0 0;font:700 34px/1.1 var(--display);letter-spacing:.012em}
 .foot{text-align:center;margin:34px 0 0;font-size:14px}
 .foot a{color:var(--text2);text-decoration:none}
 
-/* ---------- cloud app additions ---------- */
+
+/* ============================================================
+   Additions for the unified app: desktop layout, today flow,
+   room map, editor, music, settings
+   ============================================================ */
+main{display:block}
+.page{padding-top:0}
+.cols{display:grid;gap:0 24px}
+.side{display:none}
+@media(min-width:1000px){
+  body{padding-bottom:40px;padding-left:220px}
+  .page{max-width:1100px}
+  .cols{grid-template-columns:1.1fr 1fr;align-items:start}
+  .tabbar{display:none}
+  .side{display:flex}
+  .top{padding-top:22px}
+  .sheet{left:auto;right:24px;bottom:24px;width:440px;border-radius:30px;max-height:calc(100vh - 48px)}
+  .hud{left:auto;right:36px;transform:translate(0,-160%)}.hud.show{transform:none}
+}
+.side{position:fixed;left:0;top:0;bottom:0;width:220px;z-index:25;flex-direction:column;padding:calc(env(safe-area-inset-top) + 22px) 14px 22px;
+  background:rgba(20,20,26,.55);-webkit-backdrop-filter:saturate(180%) blur(30px);backdrop-filter:saturate(180%) blur(30px);border-right:.5px solid rgba(255,255,255,.08)}
+.side .brand{display:flex;align-items:center;gap:10px;padding:6px 10px 22px;font:700 17px var(--display)}
+.side .brand i{width:34px;height:34px;border-radius:9px;background:url(icon-180.png) center/cover;flex:none}
+.side button{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:12px;color:var(--text2);font-size:15px;font-weight:600;text-align:left}
+.side button .i{width:22px;height:22px}
+.side button.on{background:rgba(255,255,255,.12);color:#fff}
+.side .spacer{flex:1}
+.side .foot{font-size:12px;color:var(--text3);padding:0 10px;margin:0;text-align:left;line-height:1.5}
+
+/* today flow */
+.today{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:16px -18px 0;padding:0 18px 2px}
+.today::-webkit-scrollbar{display:none}
+.stage{flex:none;display:flex;align-items:center;gap:8px;height:40px;padding:0 14px 0 10px;border-radius:999px;font-size:14px;font-weight:600;color:var(--text2)}
+.stage .i{width:18px;height:18px}
+.stage.now{background:var(--on-bg);color:var(--on-text)}
+.stage.done{color:var(--text3)}
+.hero{height:auto;min-height:132px;padding:18px 22px}
+.hero-tx small{white-space:normal;line-height:1.3}
+.hero .kick{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.65;display:block;margin-bottom:2px}
+.hero.dark{background:linear-gradient(135deg,#2a2d4a,#13141f);color:#fff;box-shadow:0 18px 50px -12px rgba(60,70,160,.5),inset 0 1px 0 rgba(255,255,255,.15)}
+.hero.dark::before{background:radial-gradient(circle, rgba(120,140,255,.35), rgba(0,0,0,0) 65%)}
+.hero.dark .hero-ic{background:rgba(255,255,255,.14)}
+.hero.dark .tick{background:#fff;color:#111}
+
+/* live room map */
+.room{position:relative;aspect-ratio:var(--ratio,1.6);border:5px solid #4a4138;border-radius:8px;background:radial-gradient(circle at 50% 50%,#221d18,#1d1915 70%);overflow:hidden;user-select:none;-webkit-user-select:none}
+.room .fixtures{position:absolute;inset:0;pointer-events:none}
+.fx{position:absolute;border:1px solid #40382f;background:#2a241e;border-radius:3px;display:flex;align-items:center;justify-content:center}
+.fx .fl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8a7d6f;white-space:nowrap;pointer-events:none}
+.fx-tv{background:#050505;border-color:#3a342e}.fx-kitchen{background:#2b2620}
+.fx-stairs{background:repeating-linear-gradient(0deg,#191511 0 7px,#3d352d 7px 8px)}.fx-stairs .fl{background:#191511;padding:0 3px}
+.fx-window{background:#9cc3ff22;border-color:#9cc3ff66}.fx-sofa{background:#3a2f28;border-radius:10px}.fx-table{background:#2f2721;border-radius:40%}
+.fx-bed{background:#2f2a33;border-radius:6px}.fx-plant{background:#1f3a24;border-color:#2f5a36;border-radius:50%}
+.fx-label,.fx-door{background:none;border-color:transparent}
+.fx-door .swing{position:absolute;inset:0;border-left:2px solid #a89a8a;border-right:1px dashed #6e645a;border-bottom:1px dashed #6e645a;border-bottom-right-radius:100%;pointer-events:none}
+.fx-door .t1{transform:scaleX(-1)}.fx-door .t2{transform:scale(-1,-1)}.fx-door .t3{transform:scaleY(-1)}
+.room .glow{position:absolute;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:all .6s}
+.dot{position:absolute;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;padding:0;border:2px solid #0008;transition:background .4s,box-shadow .4s}
+.dot.ceiling{width:18px;height:18px;border:2px solid #fff6}
+.dot.offline{opacity:.35}
+.dot .lbl{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);font-size:10.5px;white-space:nowrap;color:#e9e1d8;text-shadow:0 1px 3px #000,0 0 6px #000;pointer-events:none}
+.dot.up .lbl{top:auto;bottom:calc(100% + 4px)}
+@media(max-width:600px){.dot .lbl{font-size:9px}.dot.ceiling .lbl{display:none}.room.editing .dot .lbl{display:block}}
+.mapcard{padding:12px;border-radius:var(--r-lg)}
+.mapcard .hint{font-size:12px;color:var(--text3);margin:10px 4px 0}
+
+/* room editor */
+.room.editing{touch-action:none;overflow:visible}
+.room.editing .fixtures{pointer-events:auto}
+.room.editing .fx{cursor:move}
+.room.editing .fx.sel{outline:2px solid var(--accent);outline-offset:2px;z-index:2}
+.room.editing .rh{position:absolute;right:-7px;bottom:-7px;width:14px;height:14px;border-radius:4px;background:var(--accent);cursor:nwse-resize;display:none}
+.room.editing .fx.sel .rh{display:block}
+.room.editing .dot{cursor:grab;z-index:3}
+.room.editing .dot.unplaced{border:2px dashed var(--accent)}
+.room.editing .dot.pending{outline:3px solid var(--accent);outline-offset:4px;animation:pulse 1s ease-in-out infinite}
+.room.placing{cursor:crosshair}
+@keyframes pulse{50%{outline-offset:8px}}
+.edlist{display:flex;flex-direction:column;gap:6px}
+.edlamp{display:flex;align-items:center;gap:10px;text-align:left;padding:9px 12px;border-radius:12px}
+.edlamp .c{width:14px;height:14px;border-radius:50%;flex:none}
+.edlamp .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
+.edlamp .st{font-size:11px;color:var(--text3);display:block}
+.edlamp .st.ok{color:var(--green)}
+.edlamp.pending{background:rgba(255,179,64,.22)}
+.edhint{color:var(--accent);font-size:14px;margin:10px 4px;min-height:1.3em}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tools button,.tools label{height:36px;padding:0 12px;border-radius:999px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.tools input[type=text],.tools input[type=number]{background:rgba(255,255,255,.1);border-radius:9px;padding:6px 10px;width:110px;font-size:15px;outline:none;-webkit-user-select:text;user-select:text}
+.tools input[type=number]{width:64px}
+
+/* effects */
+.fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fxb{position:relative;height:104px;border-radius:var(--r-lg);overflow:hidden;text-align:left;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;font:700 18px/1.1 var(--display);isolation:isolate}
+.fxb small{font:500 13px var(--font);color:rgba(255,255,255,.75);margin-top:3px}
+.fxb::before{content:"";position:absolute;inset:-50%;z-index:-1}
+.fx-cycle::before{background:conic-gradient(#ff3b30,#ff9500,#ffcc00,#34c759,#00c7be,#007aff,#af52de,#ff2d55,#ff3b30);animation:spin 8s linear infinite;filter:blur(18px) saturate(1.2)}
+.fx-chase::before{background:linear-gradient(90deg,#120a1e 0%,#ff2d92 30%,#ffd60a 45%,#120a1e 60%,#120a1e 100%);background-size:250% 100%;animation:chase 2.2s linear infinite}
+.fx-party::before{background:radial-gradient(circle at 25% 30%,#ff2d95,transparent 45%),radial-gradient(circle at 75% 35%,#00e1ff,transparent 45%),radial-gradient(circle at 50% 80%,#8a3cff,transparent 50%),#140820;animation:drift 4s ease-in-out infinite alternate}
+.fx-candle::before{background:radial-gradient(circle at 50% 70%,#ffb13d,#ff5a00 35%,#2a0d00 75%);animation:flicker 1.6s ease-in-out infinite}
+.fx-stop{background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:var(--glass-shine)}
+.fx-stop small{color:var(--text2)}
+.fxb.live{outline:2.5px solid #fff}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes chase{to{background-position:-250% 0}}
+@keyframes drift{to{transform:translate(8%,-6%) scale(1.1)}}
+@keyframes flicker{0%,100%{opacity:1;transform:scale(1)}40%{opacity:.82;transform:scale(1.04)}70%{opacity:.95;transform:scale(.98)}}
+.speed{display:flex;gap:8px;align-items:center;margin-top:12px;color:var(--text2);font-size:14px}
+
+/* timers */
+.sleep-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sleep-grid[hidden]{display:none}
+.sleepb{aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sleepb b{font:600 26px/1 var(--rounded)}
+.sleepb small{font-size:12px;color:var(--text2);margin-top:3px;font-weight:500}
+.ring-card{display:flex;align-items:center;gap:20px;padding:18px;border-radius:var(--r-xl);margin-bottom:12px}
+.ring{position:relative;width:110px;height:110px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .v{position:absolute;inset:0;display:grid;place-items:center;font:600 26px/1 var(--rounded)}
+.ring-card .mid{flex:1}
+.ring-card b{display:block;font-size:18px}
+.ring-card small{color:var(--text2);font-size:14px}
+.ring-card button{margin-top:12px;height:38px;padding:0 18px;border-radius:999px;background:rgba(255,69,58,.2);color:#ff8a82;font-weight:600;font-size:15px}
+.alarm{display:flex;align-items:center;gap:14px;padding:12px 16px;width:100%;text-align:left;position:relative;min-height:88px;cursor:pointer}
+.alarm+.alarm::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid rgba(255,255,255,.12)}
+.alarm .t{font:200 52px/1 var(--rounded);letter-spacing:-.02em}
+.alarm.off .t,.alarm.off .d{opacity:.45}
+.alarm .mid{flex:1;min-width:0}
+.alarm .d{font-size:14px;color:var(--text2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* music */
+#musicIn{background:rgba(255,255,255,.1);border-radius:12px;padding:10px;flex:1;min-width:0;max-width:100%;font-size:15px}
+#viz{width:100%;height:70px;display:block;border-radius:14px;background:#0d0b09;margin-top:12px}
+.mbtn{height:56px;padding:0 22px;border-radius:16px;font-weight:700;font-size:17px;background:var(--warm);color:#2a1604;display:inline-flex;align-items:center;gap:8px}
+.mbtn.live{background:#ff4f6d;color:#fff}
+
+/* cloud first-run + settings */
 .setup{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;justify-content:center;padding:calc(env(safe-area-inset-top) + 20px) 22px calc(env(safe-area-inset-bottom) + 20px);
   background:radial-gradient(120% 60% at 50% 0%,#3a2a18 0%,#0c0c14 55%,#060609 100%);overflow-y:auto}
 .setup[hidden]{display:none}
 .setup .logo{width:84px;height:84px;border-radius:22px;margin:0 auto 18px;background:url(icon-180.png) center/cover;box-shadow:0 18px 50px -10px rgba(255,160,60,.6)}
 .setup h1{text-align:center;font-size:30px}
 .setup p.lead{text-align:center;color:var(--text2);margin:10px 0 24px;font-size:16px;line-height:1.4}
-.steps{padding:6px 0}
 .step{display:flex;gap:14px;padding:12px 16px;align-items:flex-start;font-size:15px;line-height:1.35}
 .step+.step{border-top:.5px solid rgba(255,255,255,.1)}
 .step b.n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#2a1604;display:grid;place-items:center;font:700 14px var(--rounded)}
 .keyin{width:100%;height:54px;margin-top:16px;padding:0 16px;border-radius:16px;font:500 16px ui-monospace,SFMono-Regular,Menlo,monospace;outline:none;-webkit-user-select:text;user-select:text;letter-spacing:0}
 .keyin::placeholder{color:var(--text3);font-family:var(--font)}
-.cta{width:100%;height:56px;margin-top:12px;border-radius:16px;background:var(--warm);color:#2a1604;font-size:18px;font-weight:700;box-shadow:0 14px 40px -12px rgba(255,160,60,.6)}
+.cta{width:100%;height:56px;margin-top:12px;border-radius:16px;background:var(--warm);color:#2a1604;font-size:18px;font-weight:700}
 .cta[disabled]{opacity:.5}
 .fine{text-align:center;color:var(--text3);font-size:13px;margin-top:14px;line-height:1.4}
 .err{color:#ff8a82;text-align:center;font-size:14px;margin-top:10px;min-height:1.2em}
@@ -320,18 +455,20 @@ h1{margin:2px 0 0;font:700 34px/1.1 var(--display);letter-spacing:.012em}
 .row.link .t1{color:var(--accent)}
 .sync{display:inline-flex;align-items:center;gap:6px;color:var(--text3);font-size:13px;margin-top:22px;justify-content:center;width:100%}
 .spin{animation:spin 1s linear infinite}
+.subtabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:14px -18px 0;padding:0 18px}
+.subtabs::-webkit-scrollbar{display:none}
 </style>
 </head>
 <body>
 <div class="amb" id="amb1"></div><div class="amb" id="amb2" style="opacity:0"></div><div class="amb-veil"></div>
 
-<!-- ================= FIRST RUN ================= -->
+<!-- cloud build only: first-run key screen -->
 <div class="setup" id="setup" hidden>
   <div style="max-width:440px;margin:0 auto;width:100%">
     <div class="logo"></div>
     <h1>Living Room Lights</h1>
     <p class="lead">Connect your Govee account to control your lamps from anywhere.</p>
-    <div class="list glass steps">
+    <div class="list glass">
       <div class="step"><b class="n">1</b><span>Open the <b>Govee Home</b> app → <b>Profile</b> → <b>⚙︎ Settings</b>.</span></div>
       <div class="step"><b class="n">2</b><span>Tap <b>Apply for API Key</b>. Govee emails it to you. Skip this if you already have one.</span></div>
       <div class="step"><b class="n">3</b><span>Paste the key below.</span></div>
@@ -339,79 +476,121 @@ h1{margin:2px 0 0;font:700 34px/1.1 var(--display);letter-spacing:.012em}
     <input class="keyin glass" id="keyIn" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" autocapitalize="off" spellcheck="false">
     <button class="cta" id="keyGo">Connect</button>
     <div class="err" id="keyErr"></div>
-    <p class="fine">Your key is saved only on this device. It is never uploaded anywhere except to Govee.</p>
+    <p class="fine">Your key is saved only on this device and is sent only to Govee.</p>
   </div>
 </div>
 
+<nav class="side" id="side"></nav>
+<main>
 <!-- ================= HOME ================= -->
 <section class="page" id="p-home">
-  <div class="top">
-    <div><div class="eyebrow" id="greet">Home</div><h1>Living Room</h1></div>
-    <button class="circle-btn glass" id="hdrOff" aria-label="All off"></button>
-  </div>
+  <div class="top"><div><div class="eyebrow" id="greet">Home</div><h1>Living Room</h1></div><button class="circle-btn glass" id="hdrOff" aria-label="All off"></button></div>
   <div class="chips" id="chips"></div>
-  <button class="hero" id="fullBright">
-    <span class="hero-ic" id="heroIc"></span>
-    <span class="hero-tx"><b>Full Bright</b><small class="num">2700 K · 100%</small></span>
-    <span class="tick" id="heroTick"></span>
-  </button>
-  <div class="duo">
-    <button class="pbtn glass" id="allOn"></button>
-    <button class="pbtn glass off" id="allOff"></button>
+  <div class="cols">
+    <div>
+      <div class="head" style="margin-top:22px"><h2>Today</h2><button data-go="more" data-sub="timers">Schedule <span class="chev"></span></button></div>
+      <div class="today" id="today"></div>
+      <button class="hero" id="heroBtn"></button>
+      <div class="duo"><button class="pbtn glass" id="allOn"></button><button class="pbtn glass off" id="allOff"></button></div>
+      <div class="hslider glass" id="homeBri"></div>
+      <div id="banners"></div>
+      <div class="head"><h2>Quick themes</h2><button data-go="themes">All <span class="chev"></span></button></div>
+      <div class="pills" id="pills"></div>
+    </div>
+    <div>
+      <div class="head"><h2>Room</h2><button data-go="more" data-sub="room" class="local-only">Edit layout <span class="chev"></span></button></div>
+      <div class="glass mapcard"><div class="room" id="homeRoom"><div class="fixtures"></div><div class="glows"></div><div class="dots"></div></div><div class="hint">Tap a lamp on the map for its controls.</div></div>
+      <div class="head"><h2>Zones</h2></div>
+      <div class="tiles" id="zoneTiles"></div>
+    </div>
   </div>
-  <div class="hslider glass" id="homeBri"></div>
-  <div class="head"><h2>Scenes</h2><button data-go="themes">All <span id="chevA"></span></button></div>
-  <div class="pills" id="pills"></div>
-  <div class="head"><h2>Zones</h2></div>
-  <div class="tiles" id="zoneTiles"></div>
   <div class="sync" id="syncNote"></div>
 </section>
 
 <!-- ================= THEMES ================= -->
 <section class="page" id="p-themes" hidden>
   <div class="top"><div><div class="eyebrow">Living Room</div><h1>Themes</h1></div></div>
+  <div class="seg glass local-only" id="transSeg"><button data-t="0">Instant</button><button data-t="3" class="on">Fade</button><button data-t="30">Slow fade</button></div>
+  <div class="head"><h2>Your day</h2></div>
+  <div class="arts" id="dayArts"></div>
   <div class="head"><h2>Room themes</h2></div>
-  <div class="arts" id="themeArts"></div>
-  <div class="head"><h2>Simple &amp; saved</h2><button id="saveLook">Save current</button></div>
+  <div class="arts" id="roomArts"></div>
+  <div class="head"><h2>Saved looks</h2><button id="saveLook">Save current</button></div>
   <div class="arts" id="lookArts"></div>
 </section>
 
 <!-- ================= LAMPS ================= -->
 <section class="page" id="p-lamps" hidden>
-  <div class="top"><div><div class="eyebrow" id="lampsEyebrow">Accessories</div><h1>Lamps</h1></div></div>
+  <div class="top"><div><div class="eyebrow" id="lampsEyebrow">Accessories</div><h1>Lamps</h1></div><button class="circle-btn glass local-only" id="rescan" aria-label="Rescan"></button></div>
   <div id="lampGroups"></div>
 </section>
 
-<!-- ================= SCENES ================= -->
-<section class="page" id="p-scenes" hidden>
-  <div class="top"><div><div class="eyebrow">Animated by Govee</div><h1>Scenes</h1></div></div>
-  <div class="search glass" style="margin-top:14px"><span id="searchIc"></span><input id="sceneQ" type="search" placeholder="Search 200+ scenes" autocomplete="off"></div>
+<!-- ================= EFFECTS & SCENES ================= -->
+<section class="page" id="p-fx" hidden>
+  <div class="top"><div><div class="eyebrow">Animated</div><h1>Effects</h1></div></div>
+  <div class="local-only">
+    <div class="fx-grid" style="margin-top:14px">
+      <button class="fxb fx-chase" data-fx="chase" data-name="Chase">Chase<small>Colour runs lamp to lamp around the room</small></button>
+      <button class="fxb fx-cycle" data-fx="cycle" data-name="Rainbow">Rainbow<small>A slow wave across the room</small></button>
+      <button class="fxb fx-party" data-fx="party" data-name="Party">Party<small>Random colour bursts</small></button>
+      <button class="fxb fx-candle" data-fx="candle" data-name="Candle">Candle<small>Warm flicker</small></button>
+    </div>
+    <div class="speed"><span>Speed</span><div class="seg glass" id="fxSpeed" style="margin:0;flex:1"><button data-s="1">Slow</button><button data-s="2" class="on">Medium</button><button data-s="3">Fast</button></div><button class="chip glass" id="fxStop">■ Stop</button></div>
+    <p class="fine" style="text-align:left;margin-top:8px" id="fxNote"></p>
+  </div>
+  <div class="head"><h2>Govee scenes</h2></div>
+  <div class="search glass"><span class="ic-search"></span><input id="sceneQ" type="search" placeholder="Search 200+ scenes" autocomplete="off"></div>
   <div class="tchips" id="sceneTargets"></div>
   <div class="list glass" id="sceneList"></div>
 </section>
 
-<!-- ================= SETTINGS ================= -->
-<section class="page" id="p-settings" hidden>
-  <div class="top"><div><div class="eyebrow">Lights</div><h1>Settings</h1></div></div>
-  <div class="head"><h2>Govee account</h2></div>
-  <div class="list glass">
-    <div class="row"><span class="mid t1">API key</span><span class="val num" id="keyMask"></span></div>
-    <button class="row link" id="reload"><span class="mid t1">Refresh lamps &amp; scenes</span></button>
-    <button class="row link" id="changeKey"><span class="mid t1">Change API key</span></button>
-    <button class="row danger" id="signOut"><span class="mid t1">Remove key from this device</span></button>
+<!-- ================= MORE ================= -->
+<section class="page" id="p-more" hidden>
+  <div class="top"><div><div class="eyebrow">Lights</div><h1 id="moreTitle">More</h1></div><button class="circle-btn glass" id="addSched" aria-label="Add schedule" hidden></button></div>
+  <div class="subtabs" id="subtabs"></div>
+
+  <div id="sub-timers" hidden>
+    <div class="head"><h2>Sleep timer</h2></div>
+    <div id="sleepRun"></div>
+    <div class="sleep-grid" id="sleepBtns">
+      <button class="sleepb glass" data-min="15"><b>15</b><small>min</small></button><button class="sleepb glass" data-min="30"><b>30</b><small>min</small></button>
+      <button class="sleepb glass" data-min="45"><b>45</b><small>min</small></button><button class="sleepb glass" data-min="60"><b>60</b><small>min</small></button>
+    </div>
+    <div class="head"><h2>Schedules</h2></div>
+    <div class="list glass" id="schedList"></div>
   </div>
-  <div class="head"><h2>Saved looks</h2></div>
-  <div class="list glass" id="looksList"></div>
-  <div class="head"><h2>About</h2></div>
-  <div class="list glass info">
-    This app talks to your lamps through <b>Govee's cloud</b>, so it works anywhere, but each tap takes a moment.<br><br>
-    <b>Schedules and timers</b>: set them in the Govee Home app (open a lamp → Schedule).<br><br>
-    <b>Effects, music sync and instant control</b> need the home dashboard running on the Mac.
+
+  <div id="sub-music" hidden>
+    <div class="head"><h2>Music sync</h2><small id="musicState">off</small></div>
+    <div class="effects" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="mbtn" id="musicBtn">Start</button><select id="musicIn" aria-label="Audio input"></select></div>
+    <div class="head"><h2>Style</h2></div><div class="tchips" id="musicStyle"></div>
+    <div class="head"><h2>Colours</h2></div><div class="tchips" id="musicPal"></div>
+    <div class="head"><h2>Sensitivity</h2></div><div class="hslider glass" id="musicSens" style="margin-top:0"></div>
+    <canvas id="viz" height="70"></canvas>
+    <p class="fine" style="text-align:left" id="musicTip"></p>
   </div>
-  <div class="list glass" style="margin-top:12px">
-    <a class="row link" href="http://Arefi-Macbook.local:8787/phone" style="text-decoration:none"><span class="mid t1">Open home dashboard (Mac)</span></a>
+
+  <div id="sub-room" hidden>
+    <div class="edhint" id="edHint"></div>
+    <div class="cols">
+      <div><div class="room editing" id="edRoom"><div class="fixtures"></div><div class="dots"></div></div>
+        <div class="tools" id="edAdd"></div>
+        <div class="tools"><label class="glass">Room <input type="number" id="edW" min="1" max="50" step="0.1"> × <input type="number" id="edH" min="1" max="50" step="0.1"> m</label></div>
+      </div>
+      <div>
+        <div class="head"><h2>Lamps</h2><small id="edPlaced"></small></div>
+        <label class="fine" style="display:flex;gap:8px;align-items:center;text-align:left;margin:0 0 10px"><input type="checkbox" id="edFlash" checked> Flash the lamp when I pick it</label>
+        <div class="edlist" id="edLamps"></div>
+        <div id="edItem" hidden></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sub-settings" hidden>
+    <div id="settingsBody"></div>
   </div>
 </section>
+</main>
 
 <nav class="tabbar" id="tabbar"></nav>
 <div class="backdrop" id="backdrop"></div>
@@ -419,6 +598,7 @@ h1{margin:2px 0 0;font:700 34px/1.1 var(--display);letter-spacing:.012em}
 <div class="hud" id="hud"></div>
 
 <script>
+const BACKEND = "cloud";   // "local": talks to the Mac server · "cloud": talks to Govee directly (GitHub build)
 const I = {
   house: '<path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9"/>',
   sparkles: '<path d="M10 3.5 11.6 8 16 9.5l-4.4 1.6L10 15.5l-1.6-4.4L4 9.5 8.4 8z"/><path d="M18 13.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8zM17.5 3l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4L15.5 5l1.4-.6z"/>',
@@ -457,12 +637,18 @@ const I = {
   flash: '<path d="M13 2.5 5 13.5h6L10 21.5l8-11h-6z"/>',
 };
 const icon = (n, extra = "") => `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" ${extra}>${I[n] || I.bulb}</svg>`;
-I.gear = '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>';
-I.refresh = '<path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/>';
-
-const THEME_ICON = {golden: "sun", cinema: "film", deepwork: "brain", dinner: "fork", neon: "game", rainforest: "leaf", moonlight: "moon",
-  sunrise: "sunrise", desert: "tent", aurora: "sparkles", ocean: "wave", snack: "cup", reading: "book", fireplace: "flame",
-  full: "sun", warm: "flame", focus: "bulb", night: "moon", allred: "heart"};
+Object.assign(I, {
+  "sun-low": '<path d="M5 17.5h14M8 14.5a4 4 0 0 1 8 0M12 5v2.5M6 8l1.5 1.5M18 8l-1.5 1.5M3.5 13h2M18.5 13h2"/>',
+  lamp: '<path d="M8 3.5h8l3 8H5zM12 11.5v7M8.5 20.5h7"/>',
+  sunset: '<path d="M4 18.5h16M7 15a5 5 0 0 1 10 0M12 4v3M5 11.5l1.3 1M19 11.5l-1.3 1M9.5 6.5 12 9l2.5-2.5"/>',
+  rainbow: '<path d="M3 17a9 9 0 0 1 18 0M6.5 17a5.5 5.5 0 0 1 11 0M10 17a2 2 0 0 1 4 0"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  refresh: '<path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/>',
+  next: '<path d="M5 12h13M13 6l6 6-6 6"/>',
+  more: '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+  map: '<path d="M3.5 6.5 9 4l6 2.5L20.5 4v13.5L15 20l-6-2.5-5.5 2.5zM9 4v13.5M15 6.5V20"/>',
+});
+const THEME_ICON = {};
 const ZONES = [
   {key: "door", name: "Entrance", icon: "door", match: z => z === "door"},
   {key: "tv", name: "TV Wall", icon: "tv", match: z => z === "tvLeft" || z === "tvRight"},
@@ -473,195 +659,17 @@ const ZONES = [
   {key: "other", name: "Other", icon: "bulb", match: z => z === "other"},
 ];
 const ZONE_ORDER = ["door", "tvLeft", "tvRight", "desk", "kitchen", "ceiling", "stairs", "other"];
-const QUICK = ["golden", "cinema", "deepwork", "moonlight", "dinner", "night"];
+const QUICK = ["golden", "cinema", "deepwork", "moonlight", "rainbowrow", "dinner"];
 const SWATCHES = ["#ff3b30","#ff6a1a","#ff9f0a","#ffd60a","#b8f03c","#30d158","#00d8c0","#40c8ff","#0a84ff","#5e5ce6","#bf5af2","#ff2d92","#ff6482","#ffd1dc","#ffffff","#ffe0b5","#c8ffe6"];
 const TEMPS = [[2200,"Candle"],[2700,"Warm"],[3000,"Soft"],[4000,"Neutral"],[5000,"Cool"],[6500,"Day"]];
 
-/* =================== storage (this device only) =================== */
-const store = {
-  get(k, d = null){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
-  del(k){ try { localStorage.removeItem(k); } catch {} },
-};
-
-/* =================== Govee cloud client =================== */
-const BASE = "https://openapi.api.govee.com/router/api/v1";
-let KEY = store.get("goveeKey");
-let CFG = {room: null, zones: {}, zoneNames: {}, layout: {}, names: {}, themes: []};
-let DEV = store.get("devCache", {});      // id -> {id, sku, cloudName, kmin, kmax, hasScenes}
-let SCN = store.get("sceneCache", {});    // id -> {scene name: value}
-let STATE = store.get("stateCache", {});  // id -> {on, brightness, mode, kelvin, color, scene}
-let ONLINE = {}, TOUCHED = {}, lastSync = 0, syncing = false;
-let NAMES = store.get("names", {}), LOOKS = store.get("looks", []);
-const rid = () => (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now());
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-
-async function gv(path, body, key = KEY){
-  let r;
-  try {
-    r = await fetch(BASE + path, {method: body ? "POST" : "GET", headers: {"Govee-API-Key": key, "Content-Type": "application/json"}, body: body ? JSON.stringify(body) : undefined});
-  } catch { throw new Error("No connection to Govee"); }
-  if (r.status === 429) throw new Error("Govee's rate limit was hit, so wait a minute");
-  if (r.status === 401 || r.status === 403) throw new Error("Govee didn't accept the API key");
-  const j = await r.json().catch(() => ({}));
-  if (j.code != null && j.code !== 200) throw new Error(j.msg || j.message || "Govee returned an error");
-  return j;
-}
-
-async function loadDevices(key = KEY){
-  const j = await gv("/user/devices", null, key);
-  const out = {};
-  for (const d of j.data || []) {
-    if (!/^H/.test(d.sku)) continue;  // skip Govee app groups
-    const caps = Object.fromEntries(d.capabilities.map(c => [c.instance, c]));
-    const rng = caps.colorTemperatureK?.parameters?.range || {};
-    out[d.device] = {id: d.device, sku: d.sku, cloudName: d.deviceName, kmin: rng.min || 2700, kmax: rng.max || 6500, hasScenes: !!caps.lightScene};
-  }
-  return out;
-}
-async function loadScenes(force = false){
-  if (!force && store.get("sceneCacheAt", 0) > Date.now() - 24 * 3600e3 && Object.keys(SCN).length) return;
-  const next = {};
-  await Promise.all(Object.values(DEV).filter(d => d.hasScenes).map(async d => {
-    try {
-      const j = await gv("/device/scenes", {requestId: rid(), payload: {sku: d.sku, device: d.id}});
-      next[d.id] = Object.fromEntries((j.payload?.capabilities?.[0]?.parameters?.options || []).map(o => [o.name.replace(/ /g, " "), o.value]));
-    } catch {}
-  }));
-  SCN = next; store.set("sceneCache", SCN); store.set("sceneCacheAt", Date.now());
-}
-async function loadState(id){
-  const d = DEV[id];
-  const j = await gv("/device/state", {requestId: rid(), payload: {sku: d.sku, device: id}});
-  const s = Object.fromEntries((j.payload?.capabilities || []).map(c => [c.instance, c.state?.value]));
-  ONLINE[id] = !(s.online === false || s.online === "false");
-  if (Date.now() - (TOUCHED[id] || 0) < 8000) return;  // keep our optimistic view right after a command
-  const st = STATE[id] = STATE[id] || defaultState();
-  st.on = s.powerSwitch === 1;
-  if (s.brightness) st.brightness = s.brightness;
-  if (st.mode === "scene" && st.on) return;
-  if (s.colorTemperatureK) { st.mode = "white"; st.kelvin = s.colorTemperatureK; }
-  else if (typeof s.colorRgb === "number") { st.mode = "color"; st.color = {r: s.colorRgb >> 16 & 255, g: s.colorRgb >> 8 & 255, b: s.colorRgb & 255}; }
-}
-const defaultState = () => ({on: false, brightness: 60, mode: "white", kelvin: 2700, color: {r: 255, g: 255, b: 255}});
-async function syncStates(ids = Object.keys(DEV)){
-  if (syncing || !KEY) return; syncing = true; renderSync();
-  await Promise.all(ids.map(id => loadState(id).catch(() => {})));
-  store.set("stateCache", STATE); lastSync = Date.now(); syncing = false; build(); render();
-}
-
-/* capabilities */
-const CAP = {
-  power: v => ({type: "devices.capabilities.on_off", instance: "powerSwitch", value: v ? 1 : 0}),
-  bri: v => ({type: "devices.capabilities.range", instance: "brightness", value: v}),
-  rgb: c => ({type: "devices.capabilities.color_setting", instance: "colorRgb", value: (Math.round(c.r) << 16) | (Math.round(c.g) << 8) | Math.round(c.b)}),
-  temp: v => ({type: "devices.capabilities.color_setting", instance: "colorTemperatureK", value: v}),
-  scene: v => ({type: "devices.capabilities.dynamic_scene", instance: "lightScene", value: v}),
-};
-const send = (id, capability) => gv("/device/control", {requestId: rid(), payload: {sku: DEV[id].sku, device: id, capability}});
-
-/* Update our state immediately (optimistic), return the network work as a promise */
-function applyTo(id, t){
-  const d = DEV[id]; if (!d || !t) return Promise.resolve();
-  const st = STATE[id] = STATE[id] || defaultState();
-  TOUCHED[id] = Date.now();
-  if (t.on === false) { st.on = false; return send(id, CAP.power(false)); }
-  const first = [], then = [];
-  if (t.scene && SCN[id]?.[t.scene]) {
-    Object.assign(st, {on: true, mode: "scene", scene: t.scene});
-    first.push(CAP.scene(SCN[id][t.scene]));
-    if (t.brightness) { st.brightness = t.brightness; then.push(CAP.bri(t.brightness)); }
-  } else {
-    if (!st.on || t.on) first.push(CAP.power(true));
-    st.on = true;
-    if (t.kelvin) { const k = clamp(Math.round(t.kelvin), d.kmin, d.kmax); Object.assign(st, {mode: "white", kelvin: k}); then.push(CAP.temp(k)); }
-    else if (t.color) { Object.assign(st, {mode: "color", color: t.color}); then.push(CAP.rgb(t.color)); }
-    if (t.brightness) { st.brightness = clamp(t.brightness, 1, 100); then.push(CAP.bri(st.brightness)); }
-  }
-  return (async () => { for (const c of first) await send(id, c); await Promise.all(then.map(c => send(id, c))); })();
-}
-
-/* =================== theme logic (same rules as the home server) =================== */
-const zoneOf = d => CFG.zones[d.id] || (d.sku === "H600D" ? "ceiling" : /^H6[16]/.test(d.sku) ? "kitchen" : "other");
-function gradientState(gr, pos){
-  const f = gr.axis === "x" ? pos.x : gr.axis === "y" ? pos.y : Math.min(1, Math.hypot(pos.x - .5, pos.y - .5) * 2);
-  const st = gr.stops, seg = Math.min(st.length - 2, Math.floor(f * (st.length - 1))), t = f * (st.length - 1) - seg, a = st[seg], b = st[seg + 1];
-  return {on: true, brightness: gr.brightness, color: {r: Math.round(a.r + (b.r - a.r) * t), g: Math.round(a.g + (b.g - a.g) * t), b: Math.round(a.b + (b.b - a.b) * t)}};
-}
-function moodTarget(m, d){
-  const st = m.states || {};
-  let t = st[d.id] || st["@" + d.zone];
-  if (t == null && m.gradient) t = gradientState(m.gradient, d.pos);
-  return t != null ? t : st["*"];
-}
-function preview(m, devices){
-  const out = {};
-  for (const d of devices) {
-    const t = moodTarget(m, d); if (!t) continue;
-    if (t.on === false) { out[d.id] = null; continue; }
-    const rgb = t.kelvin ? k2rgb(t.kelvin) : t.color || {r: 255, g: 200, b: 150};
-    out[d.id] = {...rgb, bri: t.brightness || 60};
-  }
-  return out;
-}
-
-/* =================== shared state for the UI =================== */
-let S = {devices: [], moods: [], zones: {}, room: null};
-function build(){
-  const devices = Object.values(DEV).map(d => ({
-    id: d.id, sku: d.sku, name: NAMES[d.id] || CFG.names[d.id] || d.cloudName, zone: null, pos: CFG.layout[d.id] || {x: .5, y: .5},
-    state: STATE[d.id] || defaultState(), online: ONLINE[d.id] !== false, via: "cloud"}));
-  devices.forEach(d => d.zone = zoneOf(d));
-  devices.sort((a, b) => ZONE_ORDER.indexOf(a.zone) - ZONE_ORDER.indexOf(b.zone) || a.name.localeCompare(b.name));
-  const moods = CFG.themes.concat(LOOKS).map(m => ({...m, preview: preview(m, devices)}));
-  S = {devices, moods, zones: CFG.zoneNames, room: CFG.room};
-}
-const targetIds = t => !t || t === "all" ? Object.keys(DEV) : t;
-
-/* One entry point for every action the UI takes, mirroring the home server's API */
-async function api(path, body = {}, method = "POST"){
-  let work = [];
-  if (path === "/api/control") {
-    const t = {}; for (const k of ["on", "brightness", "color", "kelvin"]) if (k in body) t[k] = body[k];
-    work = targetIds(body.targets).map(id => applyTo(id, t));
-  } else if (path === "/api/mood/apply") {
-    const m = S.moods.find(x => x.id === body.id);
-    work = S.devices.filter(d => targetIds(body.targets).includes(d.id)).map(d => applyTo(d.id, moodTarget(m, d)));
-  } else if (path === "/api/scene") {
-    const ids = targetIds(body.targets).filter(id => SCN[id]?.[body.name]);
-    if (!ids.length) return hud("None of these lamps have that scene", "xmark");
-    work = ids.map(id => applyTo(id, {scene: body.name}));
-  } else if (path === "/api/identify") {
-    const id = body.id, st = STATE[id] || defaultState(), b = st.brightness, wasOn = st.on;
-    work = [(async () => {
-      if (!wasOn) await send(id, CAP.power(true));
-      for (let i = 0; i < 2; i++) { await send(id, CAP.bri(100)); await sleep(1200); await send(id, CAP.bri(5)); await sleep(1200); }
-      await send(id, CAP.bri(b)); if (!wasOn) await send(id, CAP.power(false));
-    })()];
-  } else if (path === "/api/lamp") {
-    if (body.name) { NAMES[body.id] = body.name.trim(); store.set("names", NAMES); }
-  } else if (path === "/api/moods/snapshot") {
-    const states = {};
-    for (const d of S.devices) { const s = d.state; states[d.id] = !s.on ? {on: false} : s.mode === "scene" ? {on: true, scene: s.scene, brightness: s.brightness} : s.mode === "white" ? {on: true, kelvin: s.kelvin, brightness: s.brightness} : {on: true, color: s.color, brightness: s.brightness}; }
-    LOOKS.push({id: "look-" + Date.now().toString(36), name: body.name, states}); store.set("looks", LOOKS);
-  } else if (path.startsWith("/api/moods/") && method === "DELETE") {
-    LOOKS = LOOKS.filter(l => l.id !== decodeURIComponent(path.split("/").pop())); store.set("looks", LOOKS);
-  }
-  build(); render(); store.set("stateCache", STATE);
-  if (!work.length) return;
-  const res = await Promise.allSettled(work);
-  const bad = res.filter(r => r.status === "rejected");
-  if (bad.length) hud(bad.length === res.length ? bad[0].reason.message : `${bad.length} lamp${bad.length > 1 ? "s" : ""} didn't respond`, "xmark");
-  const ids = path === "/api/control" || path === "/api/mood/apply" || path === "/api/scene" ? targetIds(body.targets) : [];
-  if (ids.length) setTimeout(() => syncStates(ids.filter(id => DEV[id])), 9000);
-}
-const control = (targets, body) => api("/api/control", {targets, ...body});
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-/* =================== helpers =================== */
-let tab = "home", busy = false, lastTheme = null, sceneTarget = "all";
-try { lastTheme = sessionStorage.getItem("lastTheme") || null; } catch {}
+/* =================== shared state & helpers =================== */
+let S = {devices: [], running: {}, lastMood: null, stage: null};
+let C = {moods: [], schedules: [], routine: {stages: []}, room: null, zones: {}, order: [], caps: {}};
+let SCN = {};  // scene name -> [lamp ids]
+let tab = "home", sub = "timers", busy = false, trans = 3, sceneTarget = "all", sleepMax = 0, fxSpeed = 2;
 const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function k2rgb(k){
   const t = k/100; let r,g,b;
@@ -681,77 +689,309 @@ const zoneDevs = z => S.devices.filter(d => z.match(d.zone));
 const avgBri = ds => ds.length ? Math.round(ds.reduce((a, d) => a + d.state.brightness, 0) / ds.length) : 0;
 const pale = c => (.299 * c.r + .587 * c.g + .114 * c.b) / 255 > .78;
 const vivid = c => { const m = Math.max(c.r, c.g, c.b) || 1; return {r: c.r / m * 255, g: c.g / m * 255, b: c.b / m * 255}; };
-function hud(msg, ic = "check"){ const h = $("#hud"); h.innerHTML = icon(ic) + esc(msg); h.classList.add("show"); clearTimeout(h._t); h._t = setTimeout(() => h.classList.remove("show"), 2200); }
-const setTheme = id => { lastTheme = id; try { sessionStorage.setItem("lastTheme", id || ""); } catch {} };
+const mood = id => C.moods.find(m => m.id === id);
+const ratio = r => (r?.w || 8) / (r?.h || 5);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function hud(msg, ic = "check"){ const h = $("#hud"); h.innerHTML = icon(ic) + esc(msg); h.classList.add("show"); clearTimeout(h._t); h._t = setTimeout(() => h.classList.remove("show"), 2000); }
 
-/* Control-Centre slider. Cloud control: one command when you let go. */
-function slider(el, {value, min = 1, max = 100, vertical = false, onInput, onChange}){
+/* =================== backend: local (Mac server) =================== */
+const Local = {
+  async api(path, body = {}, method = "POST"){
+    try {
+      const r = await fetch(path, {method, headers: {"Content-Type": "application/json"}, body: method === "DELETE" ? undefined : JSON.stringify(body)});
+      const j = await r.json();
+      if (!r.ok) { hud(j.error || "Something went wrong", "xmark"); return null; }
+      return j;
+    } catch { hud("Can't reach the lamp server", "xmark"); return null; }
+  },
+  async boot(){
+    try {
+      [C, S] = await Promise.all([fetch("/api/config").then(r => r.json()), fetch("/api/state").then(r => r.json())]);
+    } catch { hud("Lamp server not reachable — is it running?", "xmark"); }
+    render(); this.loadScenes(); this.connect();
+  },
+  async loadScenes(){
+    try { const j = await (await fetch("/api/scenes")).json(); SCN = j.scenes || {}; if (tab === "fx") renderScenes(); } catch {}
+    if (!Object.keys(SCN).length) setTimeout(() => this.loadScenes(), 5000);
+  },
+  connect(){
+    const es = new EventSource("/api/events");
+    es.addEventListener("state", e => { S = JSON.parse(e.data); if (!busy) render(); });
+    es.addEventListener("config", e => { const c = JSON.parse(e.data); const wasReady = C.cloudReady; C = c; render(); if (c.cloudReady && !wasReady) this.loadScenes(); });
+    es.onopen = () => { $("#syncNote").textContent = ""; };
+    es.onerror = () => { $("#syncNote").textContent = "Reconnecting to the Mac…"; };
+  },
+};
+
+/* =================== backend: cloud (GitHub build, talks to Govee directly) =================== */
+const Cloud = {
+  BASE: "https://openapi.api.govee.com/router/api/v1",
+  KEY: null, CFG: null, DEV: {}, STATE: {}, SCENES: {}, ONLINE: {}, TOUCHED: {}, NAMES: {}, LOOKS: [], lastMood: null, lastSync: 0, syncing: false,
+  get(k, d = null){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  rid(){ return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now(); },
+  async gv(path, body, key = this.KEY){
+    let r;
+    try { r = await fetch(this.BASE + path, {method: body ? "POST" : "GET", headers: {"Govee-API-Key": key, "Content-Type": "application/json"}, body: body ? JSON.stringify(body) : undefined}); }
+    catch { throw new Error("No connection to Govee"); }
+    if (r.status === 429) throw new Error("Govee's rate limit was hit — wait a minute");
+    if (r.status === 401 || r.status === 403) throw new Error("Govee didn't accept the API key");
+    const j = await r.json().catch(() => ({}));
+    if (j.code != null && j.code !== 200) throw new Error(j.msg || j.message || "Govee returned an error");
+    return j;
+  },
+  async loadDevices(key = this.KEY){
+    const j = await this.gv("/user/devices", null, key), out = {};
+    for (const d of j.data || []) {
+      if (!/^H/.test(d.sku)) continue;
+      const caps = Object.fromEntries(d.capabilities.map(c => [c.instance, c])), rng = caps.colorTemperatureK?.parameters?.range || {};
+      out[d.device] = {id: d.device, sku: d.sku, cloudName: d.deviceName, kmin: rng.min || 2700, kmax: rng.max || 6500, hasScenes: !!caps.lightScene};
+    }
+    return out;
+  },
+  async loadScenes(force = false){
+    if (!force && this.get("sceneCacheAt", 0) > Date.now() - 864e5 && Object.keys(this.SCENES).length) return this.indexScenes();
+    const next = {};
+    await Promise.all(Object.values(this.DEV).filter(d => d.hasScenes).map(async d => {
+      try { const j = await this.gv("/device/scenes", {requestId: this.rid(), payload: {sku: d.sku, device: d.id}});
+        next[d.id] = Object.fromEntries((j.payload?.capabilities?.[0]?.parameters?.options || []).map(o => [o.name.replace(/ /g, " "), o.value])); } catch {}
+    }));
+    this.SCENES = next; this.set("sceneCache", next); this.set("sceneCacheAt", Date.now()); this.indexScenes();
+  },
+  indexScenes(){ SCN = {}; for (const [id, sc] of Object.entries(this.SCENES)) for (const n of Object.keys(sc)) (SCN[n] = SCN[n] || []).push(id); if (tab === "fx") renderScenes(); },
+  defaultState(){ return {on: false, brightness: 60, mode: "white", kelvin: 2700, color: {r: 255, g: 255, b: 255}}; },
+  async loadState(id){
+    const d = this.DEV[id], j = await this.gv("/device/state", {requestId: this.rid(), payload: {sku: d.sku, device: id}});
+    const s = Object.fromEntries((j.payload?.capabilities || []).map(c => [c.instance, c.state?.value]));
+    this.ONLINE[id] = !(s.online === false || s.online === "false");
+    if (Date.now() - (this.TOUCHED[id] || 0) < 8000) return;
+    const st = this.STATE[id] = this.STATE[id] || this.defaultState();
+    st.on = s.powerSwitch === 1; if (s.brightness) st.brightness = s.brightness;
+    if (st.mode === "scene" && st.on) return;
+    if (s.colorTemperatureK) { st.mode = "white"; st.kelvin = s.colorTemperatureK; }
+    else if (typeof s.colorRgb === "number") { st.mode = "color"; st.color = {r: s.colorRgb >> 16 & 255, g: s.colorRgb >> 8 & 255, b: s.colorRgb & 255}; }
+  },
+  async sync(ids = Object.keys(this.DEV)){
+    if (this.syncing || !this.KEY) return; this.syncing = true; this.note();
+    await Promise.all(ids.map(id => this.loadState(id).catch(() => {})));
+    this.set("stateCache", this.STATE); this.lastSync = Date.now(); this.syncing = false; this.build(); render();
+  },
+  note(){ const el = $("#syncNote"); if (el) el.innerHTML = this.syncing ? `${icon("refresh", 'class="i spin" style="width:14px;height:14px"')} Updating…` : this.lastSync ? `Govee cloud · updated ${new Date(this.lastSync).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}` : ""; },
+  CAP: {
+    power: v => ({type: "devices.capabilities.on_off", instance: "powerSwitch", value: v ? 1 : 0}),
+    bri: v => ({type: "devices.capabilities.range", instance: "brightness", value: v}),
+    rgb: c => ({type: "devices.capabilities.color_setting", instance: "colorRgb", value: (Math.round(c.r) << 16) | (Math.round(c.g) << 8) | Math.round(c.b)}),
+    temp: v => ({type: "devices.capabilities.color_setting", instance: "colorTemperatureK", value: v}),
+    scene: v => ({type: "devices.capabilities.dynamic_scene", instance: "lightScene", value: v}),
+  },
+  send(id, cap){ return this.gv("/device/control", {requestId: this.rid(), payload: {sku: this.DEV[id].sku, device: id, capability: cap}}); },
+  applyTo(id, t){
+    const d = this.DEV[id]; if (!d || !t) return Promise.resolve();
+    const st = this.STATE[id] = this.STATE[id] || this.defaultState(), CAP = this.CAP;
+    this.TOUCHED[id] = Date.now();
+    if (t.on === false) { st.on = false; return this.send(id, CAP.power(false)); }
+    const first = [], then = [];
+    if (t.scene && this.SCENES[id]?.[t.scene]) {
+      Object.assign(st, {on: true, mode: "scene", scene: t.scene}); first.push(CAP.scene(this.SCENES[id][t.scene]));
+      if (t.brightness) { st.brightness = t.brightness; then.push(CAP.bri(t.brightness)); }
+    } else {
+      if (!st.on || t.on) first.push(CAP.power(true));
+      st.on = true;
+      if (t.kelvin) { const k = Math.max(d.kmin, Math.min(d.kmax, Math.round(t.kelvin))); Object.assign(st, {mode: "white", kelvin: k}); then.push(CAP.temp(k)); }
+      else if (t.color) { Object.assign(st, {mode: "color", color: t.color}); then.push(CAP.rgb(t.color)); }
+      if (t.brightness) { st.brightness = Math.max(1, Math.min(100, t.brightness)); then.push(CAP.bri(st.brightness)); }
+    }
+    return (async () => { for (const c of first) await this.send(id, c); await Promise.all(then.map(c => this.send(id, c))); })();
+  },
+  zoneOf(d){ return this.CFG.zones[d.id] || (d.sku === "H600D" ? "ceiling" : /^H6[16]/.test(d.sku) ? "kitchen" : "other"); },
+  order(devices){
+    const pos = d => d.pos, ang = {}; devices.forEach(d => ang[d.id] = Math.atan2(pos(d).y - .5, pos(d).x - .5));
+    const door = devices.find(d => d.zone === "door"), a0 = door ? ang[door.id] : Math.min(...Object.values(ang));
+    return Object.keys(ang).sort((a, b) => ((ang[a] - a0 + 7) % (2 * Math.PI)) - ((ang[b] - a0 + 7) % (2 * Math.PI)));
+  },
+  gradientState(gr, d, order){
+    const f = gr.axis === "order" ? (order.indexOf(d.id) / Math.max(1, order.length - 1)) : gr.axis === "y" ? d.pos.y : gr.axis === "radial" ? Math.min(1, Math.hypot(d.pos.x - .5, d.pos.y - .5) * 2) : d.pos.x;
+    const st = gr.stops, seg = Math.min(st.length - 2, Math.floor(f * (st.length - 1))), t = f * (st.length - 1) - seg, a = st[seg], b = st[seg + 1];
+    return {on: true, brightness: gr.brightness, color: {r: Math.round(a.r + (b.r - a.r) * t), g: Math.round(a.g + (b.g - a.g) * t), b: Math.round(a.b + (b.b - a.b) * t)}};
+  },
+  moodTarget(m, d){ const st = m.states || {}; let t = st[d.id] || st["@" + d.zone]; if (t == null && m.gradient) t = this.gradientState(m.gradient, d, C.order); return t != null ? t : st["*"]; },
+  build(){
+    const devices = Object.values(this.DEV).map(d => ({id: d.id, sku: d.sku, name: this.NAMES[d.id] || this.CFG.names[d.id] || d.cloudName, zone: null,
+      pos: this.CFG.layout[d.id] || {x: .5, y: .5}, state: this.STATE[d.id] || this.defaultState(), online: this.ONLINE[d.id] !== false, via: "cloud"}));
+    devices.forEach(d => d.zone = this.zoneOf(d));
+    devices.sort((a, b) => ZONE_ORDER.indexOf(a.zone) - ZONE_ORDER.indexOf(b.zone) || a.name.localeCompare(b.name));
+    C.order = this.order(devices);
+    const moods = this.CFG.themes.concat(this.LOOKS).map(m => {
+      const pv = {};
+      for (const d of devices) { const t = this.moodTarget(m, d); if (!t) continue;
+        pv[d.id] = t.on === false ? null : {...(t.kelvin ? k2rgb(t.kelvin) : t.color || {r: 255, g: 200, b: 150}), bri: t.brightness || 60}; }
+      return {...m, preview: pv};
+    });
+    const stages = this.CFG.routine?.stages || [];
+    C = {...C, moods, routine: {stages}, room: this.CFG.room, zones: this.CFG.zoneNames, schedules: [], caps: {backend: "cloud"}};
+    S = {devices, running: {}, lastMood: this.lastMood, stage: (stages.find(s => s.moodId === this.lastMood) || {}).id || null};
+  },
+  targetIds(t){ return !t || t === "all" ? Object.keys(this.DEV) : t; },
+  async api(path, body = {}, method = "POST"){
+    let work = [], ids = [];
+    const CAP = this.CAP;
+    if (path === "/api/control") {
+      const t = {}; for (const k of ["on", "brightness", "color", "kelvin"]) if (k in body) t[k] = body[k];
+      ids = this.targetIds(body.targets); work = ids.map(id => this.applyTo(id, t)); this.lastMood = null;
+    } else if (path === "/api/mood/apply") {
+      const m = mood(body.id); ids = this.targetIds(body.targets);
+      work = S.devices.filter(d => ids.includes(d.id)).map(d => this.applyTo(d.id, this.moodTarget(m, d)));
+      this.lastMood = (!body.targets || body.targets === "all") ? m.id : null;
+    } else if (path === "/api/routine/next" || path === "/api/routine/stage") {
+      const stages = C.routine.stages, cur = stages.findIndex(s => s.moodId === this.lastMood);
+      const st = path === "/api/routine/next" ? stages[(cur + 1) % stages.length] : stages.find(s => s.id === body.id);
+      if (st) return this.api("/api/mood/apply", {id: st.moodId});
+    } else if (path === "/api/scene") {
+      ids = this.targetIds(body.targets).filter(id => this.SCENES[id]?.[body.name]);
+      if (!ids.length) return hud("None of these lamps have that scene", "xmark");
+      work = ids.map(id => this.applyTo(id, {scene: body.name})); this.lastMood = null;
+    } else if (path === "/api/identify") {
+      const id = body.id, st = this.STATE[id] || this.defaultState(), b = st.brightness, wasOn = st.on;
+      work = [(async () => { if (!wasOn) await this.send(id, CAP.power(true));
+        for (let i = 0; i < 2; i++) { await this.send(id, CAP.bri(100)); await sleep(1200); await this.send(id, CAP.bri(5)); await sleep(1200); }
+        await this.send(id, CAP.bri(b)); if (!wasOn) await this.send(id, CAP.power(false)); })()];
+    } else if (path === "/api/lamp") {
+      if (body.name) { this.NAMES[body.id] = body.name.trim(); this.set("names", this.NAMES); }
+    } else if (path === "/api/moods/snapshot") {
+      const states = {};
+      for (const d of S.devices) { const s = d.state; states[d.id] = !s.on ? {on: false} : s.mode === "scene" ? {on: true, scene: s.scene, brightness: s.brightness} : s.mode === "white" ? {on: true, kelvin: s.kelvin, brightness: s.brightness} : {on: true, color: s.color, brightness: s.brightness}; }
+      this.LOOKS.push({id: "look-" + Date.now().toString(36), name: body.name, icon: "sparkles", states}); this.set("looks", this.LOOKS);
+    } else if (path.startsWith("/api/moods/") && method === "DELETE") {
+      this.LOOKS = this.LOOKS.filter(l => l.id !== decodeURIComponent(path.split("/").pop())); this.set("looks", this.LOOKS);
+    } else { hud("Not available in the cloud app", "xmark"); return null; }
+    this.build(); render(); this.set("stateCache", this.STATE);
+    if (work.length) {
+      const res = await Promise.allSettled(work), bad = res.filter(r => r.status === "rejected");
+      if (bad.length) hud(bad.length === res.length ? bad[0].reason.message : `${bad.length} lamp${bad.length > 1 ? "s" : ""} didn't respond`, "xmark");
+      if (ids.length) setTimeout(() => this.sync(ids.filter(id => this.DEV[id])), 9000);
+    }
+    return {ok: true};
+  },
+  showSetup(msg = ""){ $("#setup").hidden = false; $("#keyIn").value = ""; $("#keyErr").textContent = msg; },
+  async boot(){
+    this.KEY = this.get("goveeKey"); this.DEV = this.get("devCache", {}); this.SCENES = this.get("sceneCache", {}); this.STATE = this.get("stateCache", {});
+    this.NAMES = this.get("names", {}); this.LOOKS = this.get("looks", []);
+    try { this.CFG = await (await fetch("config.json", {cache: "no-cache"})).json(); } catch { this.CFG = {zones: {}, layout: {}, names: {}, themes: [], zoneNames: {}, routine: {stages: []}}; }
+    $("#keyGo").onclick = async () => {
+      const k = $("#keyIn").value.trim();
+      if (!/^[0-9a-f-]{20,}$/i.test(k)) { $("#keyErr").textContent = "That doesn't look like a Govee API key."; return; }
+      $("#keyGo").disabled = true; $("#keyGo").textContent = "Connecting…"; $("#keyErr").textContent = "";
+      try { const dev = await this.loadDevices(k); if (!Object.keys(dev).length) throw new Error("No lamps found on this Govee account");
+        this.DEV = dev; this.KEY = k; this.set("goveeKey", k); this.set("devCache", dev); $("#setup").hidden = true; this.start(); }
+      catch (e) { $("#keyErr").textContent = e.message; }
+      $("#keyGo").disabled = false; $("#keyGo").textContent = "Connect";
+    };
+    if (!this.KEY) { this.showSetup(); this.build(); render(); return; }
+    this.start();
+  },
+  async start(){
+    this.build(); render(); this.indexScenes();
+    try { this.DEV = await this.loadDevices(); this.set("devCache", this.DEV); }
+    catch (e) { if (/accept the API key/.test(e.message)) return this.showSetup("Govee rejected the saved key. Please paste it again."); if (!Object.keys(this.DEV).length) return hud(e.message, "xmark"); }
+    this.build(); render(); this.sync(); this.loadScenes();
+    setInterval(() => { if (!document.hidden && Date.now() - this.lastSync > 55e3) this.sync(); }, 10e3);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden && Date.now() - this.lastSync > 15e3) this.sync(); });
+  },
+};
+const B = BACKEND === "cloud" ? Cloud : Local;
+const api = (p, b, m) => B.api(p, b, m);
+const control = (targets, body) => api("/api/control", {targets, ...body});
+const has = cap => BACKEND === "local" && C.caps?.[cap] !== false;
+
+/* =================== slider (Control Centre style) =================== */
+function slider(el, {value, min = 1, max = 100, vertical = false, live = BACKEND === "local", onInput, onChange}){
   el.innerHTML = vertical ? `<div class="fill"></div><div class="glyph">${icon("sun")}</div>`
     : `<div class="lbl">${icon("sun")}<span class="num v"></span></div><div class="fill"><div class="lbl">${icon("sun")}<span class="num v"></span></div></div>`;
   const fill = el.querySelector(".fill"), labs = el.querySelectorAll(".v");
-  const set = v => {
-    el._v = v; const p = (v - min) / (max - min) * 100;
+  const set = v => { el._v = v; const p = (v - min) / (max - min) * 100;
     if (vertical) fill.style.height = p + "%"; else { fill.style.width = p + "%"; el.style.setProperty("--w", el.clientWidth + "px"); }
-    labs.forEach(l => l.textContent = v + "%");
-  };
+    labs.forEach(l => l.textContent = v + "%"); };
   set(value);
-  const at = e => { const r = el.getBoundingClientRect();
-    const f = vertical ? 1 - (e.clientY - r.top) / r.height : (e.clientX - r.left) / r.width;
-    return Math.round(min + Math.max(0, Math.min(1, f)) * (max - min)); };
+  let last = 0, timer;
+  const stream = v => { if (!live) return; clearTimeout(timer); const now = Date.now(); if (now - last > 170) { last = now; onChange(v); } else timer = setTimeout(() => { last = Date.now(); onChange(v); }, 170); };
+  const at = e => { const r = el.getBoundingClientRect(); const f = vertical ? 1 - (e.clientY - r.top) / r.height : (e.clientX - r.left) / r.width; return Math.round(min + Math.max(0, Math.min(1, f)) * (max - min)); };
   el.onpointerdown = e => {
     busy = true; el.setPointerCapture(e.pointerId);
     const start = el._v, r = el.getBoundingClientRect(), p0 = vertical ? e.clientY : e.clientX, span = vertical ? r.height : r.width;
-    el.onpointermove = ev => {
-      const d = ((vertical ? p0 - ev.clientY : ev.clientX - p0) / span) * (max - min);
-      const v = Math.round(Math.max(min, Math.min(max, start + d)));
-      if (v !== el._v) { set(v); onInput && onInput(v); }
-    };
-    el.onpointerup = el.onpointercancel = ev => {
-      el.onpointermove = el.onpointerup = el.onpointercancel = null;
+    el.onpointermove = ev => { const d = ((vertical ? p0 - ev.clientY : ev.clientX - p0) / span) * (max - min); const v = Math.round(Math.max(min, Math.min(max, start + d)));
+      if (v !== el._v) { set(v); onInput && onInput(v); stream(v); } };
+    el.onpointerup = el.onpointercancel = ev => { el.onpointermove = el.onpointerup = el.onpointercancel = null; clearTimeout(timer);
       if (Math.abs((vertical ? ev.clientY : ev.clientX) - p0) < 4) { const v = at(ev); set(v); onInput && onInput(v); }
-      onChange(el._v); setTimeout(() => busy = false, 700);
-    };
+      onChange(el._v); setTimeout(() => busy = false, 700); };
   };
   el.setValue = v => { if (!busy) set(v); };
   return el;
 }
 
-/* =================== live ambient background =================== */
+/* =================== ambient + room map =================== */
 function ambient(){
   const ds = S.devices.filter(d => lit(d) && d.pos);
   const key = ds.map(d => { const c = stateRgb(d.state); return [c.r >> 4, c.g >> 4, c.b >> 4, d.state.brightness >> 4, d.id].join(","); }).join("|");
   if (key === ambient.k) return; ambient.k = key;
-  const layers = ds.map(d => {
-    const c = vivid(stateRgb(d.state)), a = .22 + d.state.brightness / 260;
-    return `radial-gradient(55% 38% at ${8 + d.pos.x * 84}% ${6 + d.pos.y * 60}%, ${css(c, a)}, ${css(c, 0)} 72%)`;
-  });
+  const layers = ds.map(d => { const c = vivid(stateRgb(d.state)), a = .22 + d.state.brightness / 260;
+    return `radial-gradient(55% 38% at ${8 + d.pos.x * 84}% ${6 + d.pos.y * 60}%, ${css(c, a)}, ${css(c, 0)} 72%)`; });
   const bg = layers.concat("radial-gradient(130% 70% at 50% -10%, #23243a 0%, #0c0c14 55%, #060609 100%)").join(",");
   const [show, hide] = ambient.flip ? [$("#amb1"), $("#amb2")] : [$("#amb2"), $("#amb1")];
   show.style.background = bg; show.style.opacity = 1; hide.style.opacity = 0; ambient.flip = !ambient.flip;
 }
-
-/* =================== tabs =================== */
-const TABS = [["home","house","Home"],["themes","sparkles","Themes"],["lamps","bulb","Lamps"],["scenes","wand","Scenes"],["settings","gear","Settings"]];
-$("#tabbar").innerHTML = TABS.map(([k, ic, n]) => `<button data-tab="${k}" class="${k === "home" ? "on" : ""}">${icon(ic)}${n}</button>`).join("");
-function go(t){
-  tab = t;
-  document.querySelectorAll(".page").forEach(p => p.hidden = p.id !== "p-" + t);
-  document.querySelectorAll("#tabbar button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
-  window.scrollTo({top: 0});
-  render();
+function fixturesHTML(room, editable = false, selId = null){
+  return (room?.items || []).map(it => `<div class="fx fx-${esc(it.type)} ${selId === it.id ? "sel" : ""}" data-fx="${esc(it.id)}" style="left:${it.x * 100}%;top:${it.y * 100}%;width:${it.w * 100}%;height:${it.h * 100}%">
+    ${it.type === "door" ? `<i class="swing t${it.turn || 0}"></i>` : ""}<span class="fl">${esc(it.label)}</span>${editable ? `<b class="rh" data-rh="1"></b>` : ""}</div>`).join("");
 }
-$("#tabbar").onclick = e => { const b = e.target.closest("[data-tab]"); if (b) go(b.dataset.tab); };
-document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) go(g.dataset.go); });
+function dotHTML(d, extra = ""){
+  const s = d.state, on = lit(d), c = stateRgb(s);
+  const fill = !on ? "#2c2620" : s.mode === "scene" ? "conic-gradient(#ff4fa3,#6b3cff,#00c8ff,#ff4fa3)" : css(c);
+  return `<button class="dot ${d.zone === "ceiling" ? "ceiling" : ""} ${d.pos.y > .8 ? "up" : ""} ${d.online ? "" : "offline"} ${extra}" data-id="${esc(d.id)}"
+    style="left:${d.pos.x * 100}%;top:${d.pos.y * 100}%;background:${fill};${on ? `box-shadow:0 0 12px ${css(c, .9)}` : ""}" aria-label="${esc(d.name)}"><span class="lbl">${esc(d.name)}</span></button>`;
+}
+function renderRoom(el, editing = false, extraCls = () => ""){
+  el.style.setProperty("--ratio", ratio(C.room));
+  el.querySelector(".fixtures").innerHTML = fixturesHTML(C.room, editing, ED.selFx);
+  const glows = el.querySelector(".glows");
+  if (glows) glows.innerHTML = S.devices.filter(d => d.pos && lit(d)).map(d => { const s = d.state, col = s.mode === "scene" ? {r:150,g:90,b:255} : stateRgb(s), size = (d.zone === "ceiling" ? 16 : 22) + s.brightness * .28;
+    return `<div class="glow" style="left:${d.pos.x * 100}%;top:${d.pos.y * 100}%;width:${size}%;aspect-ratio:1;background:radial-gradient(circle, ${css(col, .20 + s.brightness / 250)}, ${css(col, 0)} 70%)"></div>`; }).join("");
+  el.querySelector(".dots").innerHTML = S.devices.filter(d => d.pos).map(d => dotHTML(d, extraCls(d))).join("");
+}
+$("#homeRoom").addEventListener("click", e => { const b = e.target.closest(".dot"); if (!b) return; const d = dev(b.dataset.id); lightSheet(d.name, [d.id], d.zone === "ceiling" ? "spot" : "bulb", `${C.zones[d.zone] || ""} · ${d.sku}`); });
+
+/* =================== navigation =================== */
+const TABS = [["home","house","Home"],["themes","sparkles","Themes"],["lamps","bulb","Lamps"],["fx","wand","Effects"],["more","more","More"]];
+const SUBS = [["timers","clock","Timers", "schedules"],["music","music","Music", "music"],["room","map","Room", "layout"],["settings","gear","Settings", null]];
+$("#tabbar").innerHTML = TABS.map(([k, ic, n]) => `<button data-tab="${k}">${icon(ic)}${n}</button>`).join("");
+$("#side").innerHTML = `<div class="brand"><i></i>Living Room</div>` + TABS.filter(t => t[0] !== "more").map(([k, ic, n]) => `<button data-tab="${k}">${icon(ic)}${n}</button>`).join("")
+  + SUBS.map(([k, ic, n]) => `<button data-tab="more" data-sub="${k}" class="sub-${k}">${icon(ic)}${n}</button>`).join("") + `<div class="spacer"></div><p class="foot" id="sideFoot"></p>`;
+function go(t, s){
+  tab = t; if (s) sub = s;
+  $$(".page").forEach(p => p.hidden = p.id !== "p-" + t);
+  $$("#tabbar button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  $$("#side button").forEach(b => b.classList.toggle("on", b.dataset.tab === t && (t !== "more" || b.dataset.sub === sub)));
+  if (t === "more") {
+    const subs = SUBS.filter(([k,,, cap]) => !cap || has(cap));
+    if (!subs.some(x => x[0] === sub)) sub = subs[0][0];
+    $("#subtabs").innerHTML = subs.map(([k, ic, n]) => `<button class="tchip ${sub === k ? "on" : "glass"}" data-subtab="${k}">${n}</button>`).join("");
+    $$("[id^=sub-]").forEach(x => x.hidden = x.id !== "sub-" + sub);
+    $("#moreTitle").textContent = SUBS.find(x => x[0] === sub)[2];
+    $("#addSched").hidden = sub !== "timers";
+    if (sub === "room") edOpen();
+  }
+  window.scrollTo({top: 0}); render();
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab]"); if (t) return go(t.dataset.tab, t.dataset.sub);
+  const g = e.target.closest("[data-go]"); if (g) return go(g.dataset.go, g.dataset.sub);
+  const st = e.target.closest("[data-subtab]"); if (st) return go("more", st.dataset.subtab);
+});
+$$(".chev").forEach(el => el.innerHTML = icon("chev"));
 
 /* =================== sheet =================== */
-function openSheet(html, setup){
-  const sh = $("#sheet");
-  sh.innerHTML = `<div class="grab"></div>` + html; sh.scrollTop = 0;
-  sh.classList.add("show"); $("#backdrop").classList.add("show");
-  sh.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet);
-  setup && setup(sh);
-}
+function openSheet(html, setup){ const sh = $("#sheet"); sh.innerHTML = `<div class="grab"></div>` + html; sh.scrollTop = 0; sh.classList.add("show"); $("#backdrop").classList.add("show"); sh.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet); setup && setup(sh); }
 function closeSheet(){ $("#sheet").classList.remove("show"); $("#backdrop").classList.remove("show"); busy = false; render(); }
+const sheetOpen = () => $("#sheet").classList.contains("show");
 $("#backdrop").onclick = closeSheet;
 (() => { let y0 = null; const sh = $("#sheet");
   sh.addEventListener("touchstart", e => { y0 = sh.scrollTop <= 0 && !e.target.closest(".vslider,.hslider") ? e.touches[0].clientY : null; }, {passive: true});
@@ -759,242 +999,364 @@ $("#backdrop").onclick = closeSheet;
   sh.addEventListener("touchend", e => { if (y0 == null) return; const dy = e.changedTouches[0].clientY - y0; sh.style.transition = ""; sh.style.transform = ""; y0 = null; if (dy > 120) closeSheet(); });
 })();
 
-function lightSheet(title, ids, iconName, sub = ""){
+function lightSheet(title, ids, iconName, subtitle = ""){
   const ds = ids.map(dev).filter(Boolean), one = ds.length === 1 ? ds[0] : null;
   const L = ds.filter(lit), on = L.length > 0;
   let bri = avgBri(L) || 70;
-  const white = L.length ? L.every(d => d.state.mode === "white") : true;
-  const curK = L.find(d => d.state.mode === "white")?.state.kelvin;
+  const white = L.length ? L.every(d => d.state.mode === "white") : true, curK = L.find(d => d.state.mode === "white")?.state.kelvin;
   const col = on ? stateRgb(L[0].state) : {r: 255, g: 255, b: 255};
-  const scenesFor = one ? Object.keys(SCN[one.id] || {}).sort() : [];
+  const scenesFor = one ? Object.keys(SCN).filter(n => SCN[n].includes(one.id)).sort() : [];
   openSheet(`
     <div class="sh-head"><span class="ic" style="${on ? `background:${css(vivid(col))};color:#fff` : ""}">${icon(iconName)}</span>
-      <span class="mid"><b>${esc(title)}</b><small>${esc(sub)}</small></span><button class="x" data-close aria-label="Close">${icon("xmark")}</button></div>
+      <span class="mid"><b>${esc(title)}</b><small>${esc(subtitle)}</small></span><button class="x" data-close aria-label="Close">${icon("xmark")}</button></div>
     <div class="bigval num ${on ? "" : "off"}" id="shVal">${on ? `${bri}<span>%</span>` : "Off"}</div>
-    <div class="vwrap">
-      <div class="vslider" id="shV" style="--c:${on ? css(col) : "rgba(255,255,255,.35)"}"></div>
-      <div class="side-btns">
-        <button class="roundb ${on ? "on" : ""}" id="shPow" aria-label="Power">${icon("power")}</button>
-        ${one ? `<button class="roundb" id="shFlash" aria-label="Find it">${icon("flash")}</button>` : ""}
-      </div>
-    </div>
+    <div class="vwrap"><div class="vslider" id="shV" style="--c:${on ? css(col) : "rgba(255,255,255,.35)"}"></div>
+      <div class="side-btns"><button class="roundb ${on ? "on" : ""}" id="shPow" aria-label="Power">${icon("power")}</button>${one ? `<button class="roundb" id="shFlash" aria-label="Find it">${icon("flash")}</button>` : ""}</div></div>
     <div class="seg glass" id="shSeg" style="margin-top:24px"><button data-m="c" class="${white ? "" : "on"}">Colour</button><button data-m="w" class="${white ? "on" : ""}">White</button></div>
     <div id="shColor" ${white ? "hidden" : ""}><div class="swatches">${SWATCHES.map(h => `<button class="swatch" style="background:${h}" data-c="${h}" aria-label="${h}"></button>`).join("")}<label class="swatch custom" aria-label="Custom colour"><input type="color" id="shCustom" value="#ff8800"></label></div></div>
     <div id="shWhite" ${white ? "" : "hidden"}><div class="temps">${TEMPS.map(([k, n]) => `<button class="temp ${curK && Math.abs(curK - k) < 150 ? "sel" : ""}" data-k="${k}"><i style="background:${css(k2rgb(k))}"></i>${n}</button>`).join("")}</div></div>
-    ${one ? `<div class="sh-actions"><button id="shRename">${icon("pencil")}Rename</button><button id="shFlash2">${icon("flash")}Find it</button></div>` : ""}
+    ${one ? `<div class="sh-actions"><button id="shRename">${icon("pencil")}Rename</button><button id="shZone">${icon("map")}${esc(C.zones[one.zone] || "Zone")}</button></div>` : ""}
     ${scenesFor.length ? `<div class="sec-label">Scenes</div><div class="list">${scenesFor.map(n => `<button class="row" data-scene="${esc(n)}"><span class="mid t1">${esc(n)}</span><span class="trail">${icon("play")}</span></button>`).join("")}</div>` : ""}
   `, sh => {
     const val = sh.querySelector("#shVal"), pow = sh.querySelector("#shPow"), vs = sh.querySelector("#shV");
     const setOn = v => { pow.classList.toggle("on", v); val.classList.toggle("off", !v); if (!v) val.innerHTML = "Off"; };
     const showBri = v => { bri = v; val.classList.remove("off"); val.innerHTML = `${v}<span>%</span>`; pow.classList.add("on"); };
-    slider(vs, {value: on ? bri : 0, min: 0, max: 100, vertical: true, onInput: v => v ? showBri(v) : setOn(false),
-      onChange: v => v ? control(ids, {brightness: v}) : control(ids, {on: false})});
+    slider(vs, {value: on ? bri : 0, min: 0, max: 100, vertical: true, onInput: v => v ? showBri(v) : setOn(false), onChange: v => v ? control(ids, {brightness: v}) : control(ids, {on: false})});
     pow.onclick = () => { const v = !pow.classList.contains("on"); setOn(v); if (v) { showBri(bri); vs.setValue(bri); } else vs.setValue(0); control(ids, {on: v}); };
     const paint = c => { vs.style.setProperty("--c", css(c)); sh.querySelector(".sh-head .ic").style.cssText = `background:${css(vivid(c))};color:#fff`; };
     const wake = () => { if (!pow.classList.contains("on")) { showBri(bri); vs.setValue(bri); } };
-    sh.querySelector("#shSeg").onclick = e => {
-      const b = e.target.closest("[data-m]"); if (!b) return;
-      sh.querySelectorAll("#shSeg button").forEach(x => x.classList.toggle("on", x === b));
-      sh.querySelector("#shColor").hidden = b.dataset.m !== "c"; sh.querySelector("#shWhite").hidden = b.dataset.m !== "w";
-    };
-    sh.querySelector("#shColor").onclick = e => {
-      const b = e.target.closest("[data-c]"); if (!b) return;
-      sh.querySelectorAll(".swatch").forEach(x => x.classList.toggle("sel", x === b));
-      paint(hex2rgb(b.dataset.c)); wake(); setTheme(null);
-      control(ids, {color: hex2rgb(b.dataset.c)});
-    };
-    sh.querySelector("#shCustom").onchange = e => { paint(hex2rgb(e.target.value)); wake(); control(ids, {color: hex2rgb(e.target.value)}); };
-    sh.querySelector("#shWhite").onclick = e => {
-      const b = e.target.closest("[data-k]"); if (!b) return;
-      sh.querySelectorAll(".temp").forEach(x => x.classList.toggle("sel", x === b));
-      paint(k2rgb(+b.dataset.k)); wake(); setTheme(null);
-      control(ids, {kelvin: +b.dataset.k});
-    };
+    sh.querySelector("#shSeg").onclick = e => { const b = e.target.closest("[data-m]"); if (!b) return; sh.querySelectorAll("#shSeg button").forEach(x => x.classList.toggle("on", x === b)); sh.querySelector("#shColor").hidden = b.dataset.m !== "c"; sh.querySelector("#shWhite").hidden = b.dataset.m !== "w"; };
+    sh.querySelector("#shColor").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; sh.querySelectorAll(".swatch").forEach(x => x.classList.toggle("sel", x === b)); paint(hex2rgb(b.dataset.c)); wake(); control(ids, {color: hex2rgb(b.dataset.c), on: true}); };
+    sh.querySelector("#shCustom").onchange = e => { paint(hex2rgb(e.target.value)); wake(); control(ids, {color: hex2rgb(e.target.value), on: true}); };
+    sh.querySelector("#shWhite").onclick = e => { const b = e.target.closest("[data-k]"); if (!b) return; sh.querySelectorAll(".temp").forEach(x => x.classList.toggle("sel", x === b)); paint(k2rgb(+b.dataset.k)); wake(); control(ids, {kelvin: +b.dataset.k, on: true}); };
     if (one) {
-      const find = () => { api("/api/identify", {id: one.id}); hud(`Flashing ${one.name}`, "flash"); };
-      sh.querySelector("#shFlash").onclick = find; sh.querySelector("#shFlash2").onclick = find;
+      sh.querySelector("#shFlash").onclick = () => { api("/api/identify", {id: one.id}); hud(`Flashing ${one.name}`, "flash"); };
       sh.querySelector("#shRename").onclick = () => { const n = prompt("Rename lamp", one.name); if (n && n.trim()) { api("/api/lamp", {id: one.id, name: n}); sh.querySelector(".sh-head b").textContent = n; } };
+      sh.querySelector("#shZone").onclick = () => {
+        if (!has("layout")) return hud("Change zones from the Mac dashboard", "xmark");
+        const keys = Object.keys(C.zones), cur = keys.indexOf(one.zone), z = keys[(cur + 1) % keys.length];
+        api("/api/lamp", {id: one.id, zone: z}); sh.querySelector("#shZone").innerHTML = icon("map") + esc(C.zones[z]); hud(`${one.name} → ${C.zones[z]}`, "map");
+      };
     }
-    sh.querySelectorAll("[data-scene]").forEach(b => b.onclick = () => { setTheme(null); api("/api/scene", {name: b.dataset.scene, targets: ids}); hud(b.dataset.scene, "play"); });
+    sh.querySelectorAll("[data-scene]").forEach(b => b.onclick = () => { api("/api/scene", {name: b.dataset.scene, targets: ids}); hud(b.dataset.scene, "play"); });
   });
 }
 
 /* =================== HOME =================== */
 $("#hdrOff").innerHTML = icon("power");
-$("#heroIc").innerHTML = icon("sun");
-$("#heroTick").innerHTML = icon("check");
-$("#chevA").innerHTML = icon("chev");
 $("#allOn").innerHTML = icon("bulb") + "All On";
 $("#allOff").innerHTML = icon("power") + "All Off";
-$("#fullBright").onclick = () => { setTheme("full"); api("/api/mood/apply", {id: "full"}); hud("Full Bright · 2700 K · 100%", "sun"); };
 $("#allOn").onclick = () => { control("all", {on: true}); hud("All lights on", "bulb"); };
-$("#allOff").onclick = $("#hdrOff").onclick = () => { setTheme(null); control("all", {on: false}); hud("All lights off", "power"); };
+$("#allOff").onclick = $("#hdrOff").onclick = () => { control("all", {on: false}); hud("All lights off", "power"); };
 const homeBri = slider($("#homeBri"), {value: 60, onChange: v => control("all", {brightness: v})});
 function greeting(){ const h = new Date().getHours(); return h < 5 ? "Good night" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; }
-
 function tileHTML(attrs, name, ids, ic, status){
-  const ds = ids.map(dev).filter(Boolean), L = ds.filter(lit);
-  const c = L.length ? vivid(stateRgb(L[0].state)) : null;
+  const ds = ids.map(dev).filter(Boolean), L = ds.filter(lit), c = L.length ? vivid(stateRgb(L[0].state)) : null;
   const st = status ?? (!L.length ? (ds.every(d => !d.online) ? "Offline" : "Off") : `${L.length === ds.length ? "" : L.length + " of " + ds.length + " · "}${avgBri(L)}%`);
   return `<div class="tile ${L.length ? "on" : "glass"} ${ds.every(d => !d.online) ? "offline" : ""}" ${attrs} role="button" style="${c ? `--glow:${css(c, .7)}` : ""}">
     <button class="tile-ic" data-toggle aria-label="Toggle" style="${c ? `background:${css(c)};box-shadow:0 6px 20px ${css(c, .55)};color:${pale(c) ? "rgba(60,30,0,.75)" : "#fff"}` : ""}">${icon(ic)}</button>
-    <span class="tile-go">${icon("chev")}</span>
-    <div class="tile-tx"><b>${name}</b><span>${esc(st)}</span></div></div>`;
+    <span class="tile-go">${icon("chev")}</span><div class="tile-tx"><b>${name}</b><span>${esc(st)}</span></div></div>`;
 }
 function artBg(m){
   const pv = m.preview || {}, layers = [];
-  for (const d of S.devices) {
-    const p = pv[d.id]; if (!p || !d.pos) continue;
-    const c = vivid(p), a = .5 + p.bri / 220, r = 30 + p.bri * .35;
-    layers.push(`radial-gradient(${r}% ${r * .8}% at ${6 + d.pos.x * 88}% ${8 + d.pos.y * 84}%, ${css(c, Math.min(1, a))}, ${css(c, 0)} 75%)`);
-  }
+  for (const d of S.devices) { const p = pv[d.id]; if (!p || !d.pos) continue; const c = vivid(p), a = .5 + p.bri / 220, r = 30 + p.bri * .35;
+    layers.push(`radial-gradient(${r}% ${r * .8}% at ${6 + d.pos.x * 88}% ${8 + d.pos.y * 84}%, ${css(c, Math.min(1, a))}, ${css(c, 0)} 75%)`); }
   return layers.concat("linear-gradient(160deg,#16161f,#07070b)").join(",");
 }
 const avgPreview = m => { const v = Object.values(m.preview || {}).filter(Boolean); if (!v.length) return {r: 60, g: 60, b: 70};
-  const s = v.reduce((a, c) => ({r: a.r + c.r * c.bri, g: a.g + c.g * c.bri, b: a.b + c.b * c.bri, w: a.w + c.bri}), {r: 0, g: 0, b: 0, w: 0});
-  return vivid({r: s.r / s.w, g: s.g / s.w, b: s.b / s.w}); };
+  const s = v.reduce((a, c) => ({r: a.r + c.r * c.bri, g: a.g + c.g * c.bri, b: a.b + c.b * c.bri, w: a.w + c.bri}), {r: 0, g: 0, b: 0, w: 0}); return vivid({r: s.r / s.w, g: s.g / s.w, b: s.b / s.w}); };
+const mIcon = m => m.icon || "sparkles";
 
 function renderHome(){
-  const L = S.devices.filter(lit);
+  const L = S.devices.filter(lit), stages = C.routine?.stages || [];
   $("#greet").textContent = greeting();
   const chips = [`<span class="chip glass">${icon("bulb")}<span><span class="num">${L.length}</span> of ${S.devices.length} on</span></span>`];
   if (L.length) chips.push(`<span class="chip glass">${icon("sun")}<span class="num">${avgBri(L)}%</span></span>`);
-  const off = S.devices.filter(d => !d.online).length;
-  if (off) chips.push(`<span class="chip glass" style="color:#ff9f8a">${off} offline</span>`);
+  if (S.running.music) chips.push(`<span class="chip live">${icon("music")}Music</span>`);
+  if (S.running.effect) chips.push(`<span class="chip live">${icon("sparkles")}${esc(S.running.effect.type)}</span>`);
+  if (S.running.sleep) { const l = Math.max(0, S.running.sleep.ends - Date.now() / 1000); chips.push(`<span class="chip live">${icon("moon")}<span class="num">${Math.floor(l / 60)}:${String(Math.floor(l % 60)).padStart(2, "0")}</span></span>`); }
+  const off = S.devices.filter(d => !d.online).length; if (off) chips.push(`<span class="chip glass" style="color:#ff9f8a">${off} offline</span>`);
   $("#chips").innerHTML = chips.join("");
   if (L.length) homeBri.setValue(avgBri(L));
-  $("#fullBright").classList.toggle("active", lastTheme === "full");
-  $("#pills").innerHTML = QUICK.map(id => S.moods.find(m => m.id === id)).filter(Boolean).map(m =>
-    `<button class="pillb ${lastTheme === m.id ? "active" : "glass"}" data-theme="${esc(m.id)}"><span class="dot" style="background:${css(avgPreview(m))}">${icon(THEME_ICON[m.id] || "sparkles")}</span><span>${esc(m.name)}</span></button>`).join("");
+
+  // today: the stage strip + the "next" hero
+  const curIdx = stages.findIndex(s => s.id === S.stage), next = stages.length ? stages[(curIdx + 1) % stages.length] : null;
+  $("#today").innerHTML = stages.map((s, i) => { const m = mood(s.moodId) || {}; return `<button class="stage ${i === curIdx ? "now" : i < curIdx ? "done glass" : "glass"}" data-stage="${esc(s.id)}">${icon(mIcon(m))}${esc(s.name)}</button>`; }).join("");
+  if (next) { const m = mood(next.moodId) || {}, dark = next.moodId === "off";
+    $("#heroBtn").className = `hero ${dark ? "dark" : ""}`; $("#heroBtn").dataset.stage = next.id;
+    $("#heroBtn").innerHTML = `<span class="hero-ic">${icon(mIcon(m))}</span><span class="hero-tx"><span class="kick">${curIdx < 0 ? "Start the day" : "Next up"}</span><b>${esc(next.name)}</b><small>${esc(m.blurb || m.name || "")}${next.fade ? ` · ${next.fade} min fade` : ""}</small></span><span class="tick">${icon("next")}</span>`; }
+
+  const banners = [];
+  if (S.running.music) banners.push(`<div class="banner glass"><span class="ic">${icon("music")}</span><div class="mid"><b>Music sync</b><small>${S.running.music.lamps.length} lamps</small></div><button data-stop="music">Stop</button></div>`);
+  if (S.running.effect) banners.push(`<div class="banner glass"><span class="ic">${icon("sparkles")}</span><div class="mid"><b>${esc({cycle: "Rainbow", party: "Party", candle: "Candle", chase: "Chase"}[S.running.effect.type] || "Effect")}</b><small>${S.running.effect.lamps.length} lamps</small></div><button data-stop="effect">Stop</button></div>`);
+  $("#banners").innerHTML = banners.join("");
+  $("#pills").innerHTML = QUICK.map(mood).filter(Boolean).map(m => `<button class="pillb ${S.lastMood === m.id ? "active" : "glass"}" data-theme="${esc(m.id)}"><span class="dot" style="background:${css(avgPreview(m))}">${icon(mIcon(m))}</span><span>${esc(m.name)}</span></button>`).join("");
   $("#zoneTiles").innerHTML = ZONES.filter(z => zoneDevs(z).length).map(z => tileHTML(`data-zone="${z.key}"`, z.name, zoneDevs(z).map(d => d.id), z.icon)).join("");
-  renderSync();
+  renderRoom($("#homeRoom"));
+  if (B.note) B.note();
 }
-$("#zoneTiles").onclick = e => {
-  const t = e.target.closest("[data-zone]"); if (!t) return;
-  const z = ZONES.find(x => x.key === t.dataset.zone), ds = zoneDevs(z), ids = ds.map(d => d.id);
-  if (e.target.closest("[data-toggle]")) { const on = ds.some(lit); setTheme(null); control(ids, {on: !on}); hud(`${z.name} ${on ? "off" : "on"}`, on ? "power" : "bulb"); return; }
-  lightSheet(z.name, ids, z.icon, ds.map(d => d.name).join(" · "));
-};
+$("#today").onclick = e => { const b = e.target.closest("[data-stage]"); if (!b) return; const s = C.routine.stages.find(x => x.id === b.dataset.stage); api("/api/routine/stage", {id: s.id}); hud(s.name, mIcon(mood(s.moodId) || {})); };
+$("#heroBtn").onclick = () => { const s = C.routine.stages.find(x => x.id === $("#heroBtn").dataset.stage); if (!s) return; api("/api/routine/stage", {id: s.id}); hud(s.name, mIcon(mood(s.moodId) || {})); };
+$("#zoneTiles").onclick = e => { const t = e.target.closest("[data-zone]"); if (!t) return; const z = ZONES.find(x => x.key === t.dataset.zone), ds = zoneDevs(z), ids = ds.map(d => d.id);
+  if (e.target.closest("[data-toggle]")) { const on = ds.some(lit); control(ids, {on: !on}); hud(`${z.name} ${on ? "off" : "on"}`, on ? "power" : "bulb"); return; }
+  lightSheet(z.name, ids, z.icon, ds.map(d => d.name).join(" · ")); };
+$("#banners").onclick = e => { const b = e.target.closest("[data-stop]"); if (!b) return; b.dataset.stop === "music" ? api("/api/music", {stop: true}) : api("/api/effect", {type: null, targets: S.running.effect.lamps}); };
 
 /* =================== THEMES =================== */
-const artCard = m => `<button class="art ${lastTheme === m.id ? "active" : ""}" data-theme="${esc(m.id)}" style="background:${artBg(m)}">
-  <span class="art-ic">${icon(THEME_ICON[m.id] || "sparkles")}</span><span class="tick">${icon("check")}</span>
+const artCard = m => `<button class="art ${S.lastMood === m.id ? "active" : ""}" data-theme="${esc(m.id)}" style="background:${artBg(m)}">
+  <span class="art-ic">${icon(mIcon(m))}</span><span class="tick">${icon("check")}</span>
   <span class="art-tx"><b>${esc(m.name)}</b><small>${esc(m.blurb || (m.states?.["*"] ? "Same look on every lamp" : "Your saved look"))}</small></span></button>`;
 function renderThemes(){
-  $("#themeArts").innerHTML = S.moods.filter(m => m.blurb).map(artCard).join("");
-  $("#lookArts").innerHTML = S.moods.filter(m => !m.blurb).map(artCard).join("");
+  $("#dayArts").innerHTML = C.moods.filter(m => m.group === "day").map(artCard).join("");
+  $("#roomArts").innerHTML = C.moods.filter(m => m.group === "room").map(artCard).join("");
+  $("#lookArts").innerHTML = C.moods.filter(m => !m.builtin).map(artCard).join("") || `<div class="empty">Set the room up how you like it, then tap Save current.</div>`;
 }
-document.addEventListener("click", e => {
-  const c = e.target.closest("[data-theme]"); if (!c) return;
-  const m = S.moods.find(x => x.id === c.dataset.theme);
-  setTheme(m.id); api("/api/mood/apply", {id: m.id}); hud(m.name, THEME_ICON[m.id] || "sparkles");
-});
+document.addEventListener("click", e => { const c = e.target.closest("[data-theme]"); if (!c) return; const m = mood(c.dataset.theme); api("/api/mood/apply", {id: m.id, fade: trans}); hud(m.name, mIcon(m)); });
+document.addEventListener("contextmenu", e => { const c = e.target.closest(".art"); if (!c) return; const m = mood(c.dataset.theme); if (m?.builtin) return; e.preventDefault(); if (confirm(`Delete "${m.name}"?`)) api("/api/moods/" + encodeURIComponent(m.id), {}, "DELETE"); });
+$("#transSeg").onclick = e => { const b = e.target.closest("[data-t]"); if (!b) return; trans = +b.dataset.t; $$("#transSeg button").forEach(x => x.classList.toggle("on", x === b)); };
 $("#saveLook").onclick = () => { const n = prompt("Name this look", "My look"); if (n && n.trim()) { api("/api/moods/snapshot", {name: n.trim()}); hud("Look saved"); } };
 
 /* =================== LAMPS =================== */
+$("#rescan").innerHTML = icon("refresh");
+$("#rescan").onclick = () => { api("/api/rescan"); hud("Scanning for lamps…", "refresh"); };
 function renderLamps(){
   const L = S.devices.filter(lit);
   $("#lampsEyebrow").textContent = `${L.length} on · ${S.devices.filter(d => d.online).length} connected`;
-  $("#lampGroups").innerHTML = ZONES.filter(z => zoneDevs(z).length).map(z => `
-    <div class="head"><h2>${z.name}</h2></div>
-    <div class="tiles">${zoneDevs(z).map(d => {
-      const s = d.state;
-      const st = !d.online ? "Offline" : !s.on ? "Off" : s.mode === "scene" ? s.scene : s.mode === "white" ? `${s.brightness}% · ${s.kelvin} K` : `${s.brightness}%`;
-      return tileHTML(`data-lamp="${esc(d.id)}"`, esc(d.name), [d.id], z.key === "ceiling" ? "spot" : "bulb", st);
-    }).join("")}</div>`).join("") || `<div class="empty">Loading lamps…</div>`;
+  $("#lampGroups").innerHTML = ZONES.filter(z => zoneDevs(z).length).map(z => `<div class="head"><h2>${z.name}</h2></div><div class="tiles">${zoneDevs(z).map(d => { const s = d.state;
+    const st = !d.online ? "Offline" : !s.on ? "Off" : s.mode === "scene" ? s.scene : s.mode === "white" ? `${s.brightness}% · ${s.kelvin} K` : `${s.brightness}%`;
+    return tileHTML(`data-lamp="${esc(d.id)}"`, esc(d.name) + (d.via === "cloud" ? `<span class="badge">cloud</span>` : ""), [d.id], z.key === "ceiling" ? "spot" : "bulb", st); }).join("")}</div>`).join("") || `<div class="empty">Looking for lamps…</div>`;
 }
-$("#lampGroups").onclick = e => {
-  const t = e.target.closest("[data-lamp]"); if (!t) return;
-  const d = dev(t.dataset.lamp);
-  if (e.target.closest("[data-toggle]")) { setTheme(null); control([d.id], {on: !d.state.on}); return; }
-  lightSheet(d.name, [d.id], d.zone === "ceiling" ? "spot" : "bulb", `${S.zones[d.zone] || ""} · ${d.sku}`);
-};
+$("#lampGroups").onclick = e => { const t = e.target.closest("[data-lamp]"); if (!t) return; const d = dev(t.dataset.lamp);
+  if (e.target.closest("[data-toggle]")) { control([d.id], {on: !d.state.on}); return; }
+  lightSheet(d.name, [d.id], d.zone === "ceiling" ? "spot" : "bulb", `${C.zones[d.zone] || ""} · ${d.sku}${d.via === "cloud" ? " · cloud" : ""}`); };
 
-/* =================== SCENES =================== */
-$("#searchIc").innerHTML = icon("search");
-function sceneIds(){
-  if (sceneTarget === "all") return S.devices.map(d => d.id);
-  const z = ZONES.find(x => x.key === sceneTarget); return z ? zoneDevs(z).map(d => d.id) : [];
-}
+/* =================== EFFECTS & SCENES =================== */
+$(".ic-search").innerHTML = icon("search");
+$$("[data-fx]").forEach(b => b.onclick = () => { api("/api/effect", {type: b.dataset.fx, speed: fxSpeed, targets: "all"}); hud(b.dataset.name, "sparkles"); });
+$("#fxSpeed").onclick = e => { const b = e.target.closest("[data-s]"); if (!b) return; fxSpeed = +b.dataset.s; $$("#fxSpeed button").forEach(x => x.classList.toggle("on", x === b)); if (S.running.effect) api("/api/effect", {type: S.running.effect.type, speed: fxSpeed, targets: "all"}); };
+$("#fxStop").onclick = () => { api("/api/effect", {type: null, targets: "all"}); hud("Effects stopped", "power"); };
+function sceneIds(){ if (sceneTarget === "all") return S.devices.map(d => d.id); const z = ZONES.find(x => x.key === sceneTarget); return z ? zoneDevs(z).map(d => d.id) : []; }
 function renderScenes(){
+  $$("[data-fx]").forEach(b => b.classList.toggle("live", S.running.effect?.type === b.dataset.fx));
+  const cloudN = S.devices.filter(d => d.via === "cloud").length;
+  $("#fxNote").textContent = cloudN ? `${cloudN} lamp${cloudN > 1 ? "s" : ""} on the cloud sit out of effects — turn on LAN Control in the Govee app to include them.` : "";
   const opts = [["all", "Whole room"], ...ZONES.filter(z => zoneDevs(z).length).map(z => [z.key, z.name])];
   $("#sceneTargets").innerHTML = opts.map(([k, n]) => `<button class="tchip ${sceneTarget === k ? "on" : "glass"}" data-st="${k}">${n}</button>`).join("");
-  const byName = {};
-  for (const [id, sc] of Object.entries(SCN)) for (const n of Object.keys(sc)) (byName[n] = byName[n] || []).push(id);
   const want = sceneIds(), q = $("#sceneQ").value.trim().toLowerCase();
-  const list = Object.entries(byName).map(([n, ids]) => [n, ids.filter(i => want.includes(i)).length])
-    .filter(([n, c]) => c && (!q || n.toLowerCase().includes(q))).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 150);
+  const list = Object.entries(SCN).map(([n, ids]) => [n, ids.filter(i => want.includes(i)).length]).filter(([n, c]) => c && (!q || n.toLowerCase().includes(q))).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 150);
   $("#sceneList").innerHTML = list.map(([n, c]) => `<button class="row" data-scene-all="${esc(n)}"><span class="mid"><div class="t1">${esc(n)}</div>${c < want.length ? `<div class="t2">${c} of ${want.length} lamps</div>` : ""}</span><span class="trail">${icon("play")}</span></button>`).join("")
     || `<div class="empty">${Object.keys(SCN).length ? "No matching scenes" : "Loading scenes from Govee…"}</div>`;
 }
 $("#sceneTargets").onclick = e => { const b = e.target.closest("[data-st]"); if (b) { sceneTarget = b.dataset.st; renderScenes(); } };
 $("#sceneQ").oninput = renderScenes;
-$("#sceneList").onclick = e => { const b = e.target.closest("[data-scene-all]"); if (b) { setTheme(null); api("/api/scene", {name: b.dataset.sceneAll, targets: sceneIds()}); hud(b.dataset.sceneAll, "play"); } };
+$("#sceneList").onclick = e => { const b = e.target.closest("[data-scene-all]"); if (b) { api("/api/scene", {name: b.dataset.sceneAll, targets: sceneIds()}); hud(b.dataset.sceneAll, "play"); } };
+
+/* =================== TIMERS =================== */
+$("#addSched").innerHTML = icon("plus");
+$$("[data-min]").forEach(b => b.onclick = () => { sleepMax = +b.dataset.min * 60; api("/api/sleep", {minutes: +b.dataset.min, targets: "all"}); hud(`Lights out in ${b.dataset.min} min`, "moon"); });
+const DAYN = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+function schedText(s){
+  const days = s.days.length === 7 ? "Every day" : JSON.stringify(s.days) === "[0,1,2,3,4]" ? "Weekdays" : JSON.stringify(s.days) === "[5,6]" ? "Weekends" : s.days.map(d => DAYN[d]).join(" ");
+  const m = mood(s.moodId), st = C.routine.stages.find(x => x.id === s.stageId);
+  const act = s.action === "off" ? "Lights off" : s.action === "on" ? "Lights on" : s.action === "stage" ? (st ? st.name : "Stage") : m ? m.name : "Theme";
+  return `${s.name ? s.name + " · " : ""}${act} · ${days}${s.fade ? ` · ${s.fade} min fade` : ""}`;
+}
+function renderTimers(){
+  const sl = S.running.sleep;
+  if (sl) { const left = Math.max(0, sl.ends - Date.now() / 1000); sleepMax = Math.max(sleepMax, left); const p = sleepMax ? left / sleepMax : 1, Cc = 2 * Math.PI * 46;
+    $("#sleepRun").innerHTML = `<div class="ring-card glass"><div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="7"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffb340" stroke-width="7" stroke-linecap="round" stroke-dasharray="${Cc}" stroke-dashoffset="${Cc * (1 - p)}"/></svg><span class="v">${Math.floor(left / 60)}:${String(Math.floor(left % 60)).padStart(2, "0")}</span></div>
+      <div class="mid"><b>Fading to dark</b><small>Every light dims slowly, then switches off.</small><br><button id="slCancel">Cancel</button></div></div>`;
+    $("#slCancel").onclick = () => api("/api/sleep", {cancel: true}); $("#sleepBtns").hidden = true;
+  } else { $("#sleepRun").innerHTML = ""; $("#sleepBtns").hidden = false; sleepMax = 0; }
+  $("#schedList").innerHTML = C.schedules.length ? C.schedules.map(s => `<div class="alarm ${s.enabled ? "" : "off"}" data-sched="${esc(s.id)}" role="button"><span class="mid"><div class="t">${esc(s.time)}</div><div class="d">${esc(schedText(s))}</div></span><button class="sw ${s.enabled ? "on" : ""}" data-sch-tog="${esc(s.id)}" aria-label="Enabled"></button></div>`).join("")
+    : `<div class="empty">No schedules yet.<br>Tap + to run a stage of your day automatically — for example Morning at 07:00 and Lights out at 23:30.</div>`;
+}
+$("#schedList").onclick = e => { const t = e.target.closest("[data-sch-tog]"), r = e.target.closest("[data-sched]");
+  if (t) { const s = C.schedules.find(x => x.id === t.dataset.schTog); t.classList.toggle("on"); api("/api/schedules", {...s, enabled: !s.enabled}); return; }
+  if (r) schedSheet(C.schedules.find(x => x.id === r.dataset.sched)); };
+$("#addSched").onclick = () => schedSheet(null);
+function schedSheet(s){
+  const isNew = !s; s = s || {name: "", time: "07:00", days: [0,1,2,3,4,5,6], action: "stage", stageId: "morning", moodId: "full", fade: 0, targets: "all", enabled: true};
+  const days = new Set(s.days);
+  openSheet(`<div class="navbar"><button data-close>Cancel</button><b>${isNew ? "Add Schedule" : "Edit Schedule"}</b><button id="scSave">Save</button></div>
+    <div class="list" style="margin-top:16px"><label class="field"><span>Time</span><input type="time" id="scTime" value="${esc(s.time)}"></label><label class="field"><span>Label</span><input type="text" id="scName" value="${esc(s.name)}" placeholder="Optional"></label></div>
+    <div class="sec-label">Repeat</div><div class="list"><div class="days" id="scDays">${["M","T","W","T","F","S","S"].map((d, i) => `<button class="${days.has(i) ? "on" : ""}" data-d="${i}">${d}</button>`).join("")}</div></div>
+    <div class="sec-label">Action</div><div class="list">
+      <label class="field"><span>Do</span><select id="scAct"><option value="stage" ${s.action === "stage" ? "selected" : ""}>A stage of the day</option><option value="mood" ${s.action === "mood" ? "selected" : ""}>Set a theme</option><option value="on" ${s.action === "on" ? "selected" : ""}>Turn on</option><option value="off" ${s.action === "off" ? "selected" : ""}>Turn off</option></select></label>
+      <label class="field" id="scStageF"><span>Stage</span><select id="scStage">${C.routine.stages.map(x => `<option value="${esc(x.id)}" ${x.id === s.stageId ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>
+      <label class="field" id="scMoodF"><span>Theme</span><select id="scMood">${C.moods.map(m => `<option value="${esc(m.id)}" ${m.id === s.moodId ? "selected" : ""}>${esc(m.name)}</option>`).join("")}</select></label>
+      <label class="field"><span>Fade</span><select id="scFade">${[0,1,5,10,15,20,30,45,60].map(v => `<option value="${v}" ${v == s.fade ? "selected" : ""}>${v ? v + " min" : "Instant"}</option>`).join("")}</select></label></div>
+    ${isNew ? "" : `<button class="danger-btn" id="scDel">Delete Schedule</button>`}`, sh => {
+    const sync = () => { const a = sh.querySelector("#scAct").value; sh.querySelector("#scStageF").hidden = a !== "stage"; sh.querySelector("#scMoodF").hidden = a !== "mood"; };
+    sh.querySelector("#scAct").onchange = sync; sync();
+    sh.querySelector("#scDays").onclick = e => { const b = e.target.closest("[data-d]"); if (!b) return; const i = +b.dataset.d; days.has(i) ? days.delete(i) : days.add(i); b.classList.toggle("on"); };
+    sh.querySelector("#scSave").onclick = async () => { if (!days.size) return hud("Pick at least one day", "xmark");
+      await api("/api/schedules", {id: isNew ? undefined : s.id, enabled: s.enabled, name: sh.querySelector("#scName").value, time: sh.querySelector("#scTime").value, days: [...days].sort(),
+        action: sh.querySelector("#scAct").value, stageId: sh.querySelector("#scStage").value, moodId: sh.querySelector("#scMood").value, fade: +sh.querySelector("#scFade").value, targets: s.targets});
+      closeSheet(); hud("Schedule saved", "clock"); };
+    if (!isNew) sh.querySelector("#scDel").onclick = async () => { if (!confirm("Delete this schedule?")) return; await api("/api/schedules/" + encodeURIComponent(s.id), {}, "DELETE"); closeSheet(); };
+  });
+}
+
+/* =================== ROOM EDITOR (local only) =================== */
+const ADDABLE = [["door","Door"],["window","Window"],["window","Balcony door"],["tv","TV"],["sofa","Sofa"],["table","Table"],["desk","Desk"],["kitchen","Kitchen"],["stairs","Stairs"],["bed","Bed"],["plant","Plant"],["label","Label"]];
+const ED = {room: null, pending: null, selFx: null, drag: null, timer: null};
+const clamp01 = v => Math.max(0, Math.min(1, v));
+function edOpen(){ ED.room = JSON.parse(JSON.stringify(C.room)); ED.selFx = null; $("#edW").value = ED.room.w; $("#edH").value = ED.room.h; const first = S.devices.find(d => !d.pos?.placed); edPick(first ? first.id : null, !!first); renderEditor(); }
+function edPick(id, flash = true){ ED.pending = id; if (id && flash && $("#edFlash").checked) api("/api/identify", {id}); edHint(); }
+function edHint(){ const d = ED.pending && dev(ED.pending);
+  $("#edHint").innerHTML = d ? `Tap the map where <b>${esc(d.name)}</b> is${$("#edFlash").checked ? " (it's flashing now)" : ""} · <a href="#" id="edSkip" style="color:var(--text2)">skip</a>` : "Drag lamps and furniture into place. Pick a lamp on the right to place it by tapping.";
+  const sk = $("#edSkip"); if (sk) sk.onclick = e => { e.preventDefault(); edNext(); }; }
+function edNext(){ const i = S.devices.findIndex(d => d.id === ED.pending); const next = S.devices.slice(i + 1).find(d => !d.pos?.placed); edPick(next ? next.id : null); renderEditor(); }
+function renderEditor(){
+  if (tab !== "more" || sub !== "room" || ED.drag || !ED.room) return;
+  const r = ED.room, el = $("#edRoom");
+  el.classList.toggle("placing", !!ED.pending);
+  const saved = C.room; C.room = r; renderRoom(el, true, d => (d.pos.placed ? "" : "unplaced") + (ED.pending === d.id ? " pending" : "")); C.room = saved;
+  $("#edPlaced").textContent = `${S.devices.filter(d => d.pos?.placed).length} of ${S.devices.length} placed`;
+  $("#edLamps").innerHTML = S.devices.map(d => `<button class="edlamp glass ${ED.pending === d.id ? "pending" : ""}" data-pick="${esc(d.id)}"><span class="c" style="background:${lit(d) ? css(stateRgb(d.state)) : "#3a332c"}"></span><span class="nm">${esc(d.name)}<span class="st ${d.pos?.placed ? "ok" : ""}">${d.pos?.placed ? "✓ placed" : "not placed yet"} · ${esc(C.zones[d.zone] || d.zone)}</span></span></button>`).join("");
+  $("#edAdd").innerHTML = ADDABLE.map(([t, n], i) => `<button class="glass" data-add="${i}">+ ${n}</button>`).join("");
+  const it = r.items.find(x => x.id === ED.selFx); $("#edItem").hidden = !it;
+  if (it) { $("#edItem").innerHTML = `<div class="head"><h2>Selected: ${esc(it.type)}</h2></div><div class="tools"><input type="text" id="edLabel" value="${esc(it.label)}" placeholder="Label">${it.type === "door" ? `<button class="glass" id="edTurn">↻ Turn swing</button>` : ""}<button class="glass" id="edDel" style="color:#ff6961">Remove</button></div><p class="fine" style="text-align:left">Drag to move · orange corner to resize.</p>`;
+    $("#edLabel").oninput = e => { it.label = e.target.value; edSave(); $(`#edRoom [data-fx="${CSS.escape(it.id)}"] .fl`).textContent = it.label; };
+    if ($("#edTurn")) $("#edTurn").onclick = () => { it.turn = ((it.turn || 0) + 1) % 4; edSave(); renderEditor(); };
+    $("#edDel").onclick = () => { r.items = r.items.filter(x => x !== it); ED.selFx = null; edSave(); renderEditor(); }; }
+}
+$("#edLamps").onclick = e => { const b = e.target.closest("[data-pick]"); if (!b) return; edPick(ED.pending === b.dataset.pick ? null : b.dataset.pick); renderEditor(); };
+$("#edFlash").onchange = edHint;
+$("#edAdd").onclick = e => { const b = e.target.closest("[data-add]"); if (!b) return; const [type, label] = ADDABLE[+b.dataset.add];
+  const size = {door:[.08,.13], window:[.14,.025], tv:[.15,.03], sofa:[.22,.1], table:[.12,.1], desk:[.15,.1], kitchen:[.22,.3], stairs:[.12,.28], bed:[.2,.3], plant:[.04,.065], label:[.12,.05]}[type];
+  const it = {id: type + Math.random().toString(36).slice(2, 7), type, label, x: .5 - size[0] / 2, y: .5 - size[1] / 2, w: size[0], h: size[1], turn: 0};
+  ED.room.items.push(it); ED.selFx = it.id; ED.pending = null; edHint(); edSave(); renderEditor(); };
+const onSize = () => { const w = parseFloat($("#edW").value), h = parseFloat($("#edH").value); if (w >= 1 && h >= 1) { ED.room.w = w; ED.room.h = h; edSave(); renderEditor(); } };
+$("#edW").oninput = onSize; $("#edH").oninput = onSize;
+function edSave(){ clearTimeout(ED.timer); ED.timer = setTimeout(() => api("/api/room", {room: ED.room}), 400); }
+$("#edRoom").addEventListener("pointerdown", e => {
+  const room = $("#edRoom"), rect = room.getBoundingClientRect(), pt = ev => ({x: clamp01((ev.clientX - rect.left) / rect.width), y: clamp01((ev.clientY - rect.top) / rect.height)}), p0 = pt(e);
+  const dot = e.target.closest(".dot"), rh = e.target.closest("[data-rh]"), fxEl = e.target.closest(".fx"); let move = null, up = null;
+  if (dot) { const d = dev(dot.dataset.id); let moved = false; ED.drag = d.id;
+    move = ev => { const p = pt(ev); dot.style.left = p.x * 100 + "%"; dot.style.top = p.y * 100 + "%"; d.pos = {...p, placed: true}; moved = true; };
+    up = () => { ED.drag = null; if (moved) api("/api/lamp", {id: d.id, x: d.pos.x, y: d.pos.y}).then(() => ED.pending === d.id ? edNext() : renderEditor()); else { edPick(ED.pending === d.id ? null : d.id); renderEditor(); } };
+  } else if (rh) { const it = ED.room.items.find(x => x.id === fxEl.dataset.fx); ED.drag = "fx";
+    move = ev => { const p = pt(ev); it.w = Math.max(.02, p.x - it.x); it.h = Math.max(.015, p.y - it.y); fxEl.style.width = it.w * 100 + "%"; fxEl.style.height = it.h * 100 + "%"; };
+    up = () => { ED.drag = null; edSave(); renderEditor(); };
+  } else if (ED.pending) { const id = ED.pending; dev(id).pos = {...p0, placed: true}; api("/api/lamp", {id, x: p0.x, y: p0.y}).then(edNext); return;
+  } else if (fxEl) { const it = ED.room.items.find(x => x.id === fxEl.dataset.fx), ox = p0.x - it.x, oy = p0.y - it.y; ED.selFx = it.id; ED.drag = "fx";
+    $$("#edRoom .fx").forEach(x => x.classList.toggle("sel", x === fxEl));
+    move = ev => { const p = pt(ev); it.x = clamp01(Math.min(p.x - ox, 1 - it.w)); it.y = clamp01(Math.min(p.y - oy, 1 - it.h)); fxEl.style.left = it.x * 100 + "%"; fxEl.style.top = it.y * 100 + "%"; };
+    up = () => { ED.drag = null; edSave(); renderEditor(); };
+  } else { ED.selFx = null; renderEditor(); return; }
+  e.preventDefault(); room.setPointerCapture(e.pointerId);
+  const mv = ev => move(ev), end = () => { room.removeEventListener("pointermove", mv); room.removeEventListener("pointerup", end); room.removeEventListener("pointercancel", end); up(); };
+  room.addEventListener("pointermove", mv); room.addEventListener("pointerup", end); room.addEventListener("pointercancel", end);
+});
+
+/* =================== MUSIC SYNC (local only; runs in this browser) =================== */
+const STYLES = {pulse: ["Beat pulse", "Every lamp flashes a new colour on each beat."], spectrum: ["Room spectrum", "Bass by the door, treble by the kitchen — each lamp follows its own band."], bass: ["Bass drop", "Floor lamps punch with the kick; the ceiling holds a glow."], chill: ["Chill flow", "Slow colour drift that swells with the volume."]};
+const PALETTES = {rainbow: ["Rainbow", null], neon: ["Neon", ["#ff00c8","#00e5ff","#7a00ff","#00ff9c"]], fire: ["Fire", ["#ff1a00","#ff6a00","#ffb000","#ff0055"]], ocean: ["Ocean", ["#00e0ff","#0066ff","#00ffa2","#3a4bff"]], sunset: ["Sunset", ["#ff2d55","#ff7a00","#ffd27a","#b43cff"]]};
+const M = {on: false, style: "pulse", pal: "rainbow", sens: 6, input: null, ids: [], ctx: null, stream: null, an: null, proc: null, bins: null, avgBass: 0, peak: {}, lastBeat: 0, flash: 0, t: 0, level: 0, beat: false, lastSend: 0, inflight: false};
+try { Object.assign(M, JSON.parse(localStorage.getItem("musicPrefs") || "{}"), {on: false}); } catch {}
+const savePrefs = () => { try { localStorage.setItem("musicPrefs", JSON.stringify({style: M.style, pal: M.pal, sens: M.sens, input: M.input})); } catch {} };
+function hsv(h, s = 1, v = 1){ const i = Math.floor(h * 6), f = h * 6 - i, p = v * (1 - s), q = v * (1 - f * s), u = v * (1 - (1 - f) * s); const [r, g, b] = [[v,u,p],[q,v,p],[p,v,u],[p,q,v],[u,p,v],[v,p,q]][((i % 6) + 6) % 6]; return {r: r * 255, g: g * 255, b: b * 255}; }
+function palColor(t){ t = ((t % 1) + 1) % 1; const list = PALETTES[M.pal][1]; if (!list) return hsv(t); const n = list.length, x = t * n, i = Math.floor(x) % n, f = x - Math.floor(x), a = hex2rgb(list[i]), b = hex2rgb(list[(i + 1) % n]); return {r: a.r + (b.r - a.r) * f, g: a.g + (b.g - a.g) * f, b: a.b + (b.b - a.b) * f}; }
+const musicSens = slider($("#musicSens"), {value: M.sens * 10, min: 10, max: 100, live: false, onChange: v => { M.sens = Math.round(v / 10); savePrefs(); }});
+function renderMusic(){
+  $("#musicStyle").innerHTML = Object.entries(STYLES).map(([k, [n]]) => `<button class="tchip ${M.style === k ? "on" : "glass"}" data-style="${k}">${n}</button>`).join("");
+  $("#musicPal").innerHTML = Object.entries(PALETTES).map(([k, [n]]) => `<button class="tchip ${M.pal === k ? "on" : "glass"}" data-pal="${k}">${n}</button>`).join("");
+  $("#musicTip").innerHTML = STYLES[M.style][1] + (M.on ? "" : " Pick <b>BlackHole</b> as the input to follow Spotify directly; a microphone listens to the room. Runs in this browser on the Mac.");
+  $("#musicBtn").innerHTML = M.on ? "■ Stop" : icon("music") + "Start"; $("#musicBtn").classList.toggle("live", M.on);
+  $("#musicState").textContent = M.on ? `listening · ${M.ids.length} lamps` : S.running.music ? "running from another tab" : "off";
+}
+$("#musicStyle").onclick = e => { const b = e.target.closest("[data-style]"); if (b) { M.style = b.dataset.style; savePrefs(); renderMusic(); } };
+$("#musicPal").onclick = e => { const b = e.target.closest("[data-pal]"); if (b) { M.pal = b.dataset.pal; savePrefs(); renderMusic(); } };
+$("#musicIn").onchange = e => { M.input = e.target.value; savePrefs(); if (M.on) { stopMusic(true); startMusic(); } };
+async function listInputs(){ if (!navigator.mediaDevices?.enumerateDevices) return; const ins = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === "audioinput"), named = ins.some(d => d.label);
+  $("#musicIn").innerHTML = named ? ins.map(d => `<option value="${esc(d.deviceId)}" ${d.deviceId === M.input ? "selected" : ""}>${esc(d.label.replace(/\s*\(.*?\)\s*$/, "") || "Input")}</option>`).join("") : `<option value="">Default microphone (names appear after first start)</option>`;
+  if (named && !ins.some(d => d.deviceId === M.input)) { const bh = ins.find(d => /blackhole/i.test(d.label)); if (bh) { M.input = bh.deviceId; $("#musicIn").value = bh.deviceId; } } }
+async function startMusic(){
+  if (!navigator.mediaDevices?.getUserMedia) { hud("This browser can't capture audio — open the dashboard in Chrome or Safari on the Mac", "xmark"); return; }
+  try { M.stream = await navigator.mediaDevices.getUserMedia({audio: {deviceId: M.input ? {exact: M.input} : undefined, echoCancellation: false, noiseSuppression: false, autoGainControl: false}}); }
+  catch { hud("Couldn't open the audio input — allow microphone access and try again", "xmark"); return; }
+  await listInputs();
+  M.ctx = new (window.AudioContext || window.webkitAudioContext)(); const src = M.ctx.createMediaStreamSource(M.stream);
+  M.an = M.ctx.createAnalyser(); M.an.fftSize = 2048; M.an.smoothingTimeConstant = .55; M.bins = new Uint8Array(M.an.frequencyBinCount); src.connect(M.an);
+  M.proc = M.ctx.createScriptProcessor(1024, 1, 1); src.connect(M.proc); M.proc.connect(M.ctx.destination); M.proc.onaudioprocess = tick;  // fires on the audio clock, keeps running in background tabs
+  M.ids = S.devices.map(d => d.id); M.on = true; M.avgBass = 0; M.flash = 0; M.peak = {};
+  await api("/api/music", {start: true, targets: M.ids}); renderMusic();
+}
+function stopMusic(silent = false){ if (!M.on) return; M.on = false; try { M.proc.onaudioprocess = null; M.stream.getTracks().forEach(t => t.stop()); M.ctx.close(); } catch {} if (!silent) api("/api/music", {stop: true}); renderMusic(); }
+$("#musicBtn").onclick = () => M.on ? stopMusic() : startMusic();
+function band(lo, hi){ const hz = M.ctx.sampleRate / M.an.fftSize, a = Math.max(1, Math.floor(lo / hz)), b = Math.min(M.bins.length - 1, Math.ceil(hi / hz)); let sum = 0; for (let i = a; i <= b; i++) sum += M.bins[i]; return sum / ((b - a + 1) * 255); }
+function norm(key, v){ M.peak[key] = Math.max(v, (M.peak[key] || .05) * .997, .02); return Math.min(1, v / M.peak[key]); }
+function tick(){
+  if (!M.on) return; M.an.getByteFrequencyData(M.bins);
+  const bass = norm("b", band(30, 150)), mid = norm("m", band(150, 2000)), treb = norm("t", band(2000, 9000)), all = norm("all", band(30, 9000)), now = performance.now();
+  M.avgBass = M.avgBass * .93 + bass * .07;
+  M.beat = bass > M.avgBass * (1.55 - M.sens * .06) && bass > .35 && now - M.lastBeat > 230;
+  if (M.beat) { M.lastBeat = now; M.flash = 1; M.t += M.pal === "rainbow" ? .17 : .25; }
+  M.flash *= .9; M.level = M.level * .85 + all * .15; if (M.style === "chill") M.t += .0006 + M.level * .0025;
+  drawViz(); if (now - M.lastSend < 66 || M.inflight) return; M.lastSend = now; sendFrame(bass, mid, treb);
+}
+function sendFrame(bass){
+  const frame = {};
+  for (const id of M.ids) { const d = dev(id); if (!d || !d.pos) continue; const x = d.pos.x, ceiling = d.zone === "ceiling"; let col, lvl;
+    if (M.style === "pulse") { col = palColor(M.t + x * .12); lvl = .18 + .82 * M.flash; }
+    else if (M.style === "spectrum") { const f = 45 * Math.pow(2, x * 7.2); col = palColor(x * .8 + M.t * .2); lvl = Math.pow(norm("s" + id, band(f / 1.5, f * 1.5)), 1.6); }
+    else if (M.style === "bass") { col = palColor(M.t + (ceiling ? .5 : x * .1)); lvl = ceiling ? .25 : .08 + .92 * Math.pow(bass, 2.2); }
+    else { col = palColor(M.t + x * .3); lvl = .25 + .6 * M.level; }
+    lvl = Math.max(.03, Math.min(1, lvl)); frame[id] = [col.r * lvl, col.g * lvl, col.b * lvl].map(Math.round); }
+  M.inflight = true;
+  fetch("/api/music", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({frame})}).then(r => r.json()).then(j => { if (j.ok === false) { stopMusic(true); hud("Music sync stopped — a theme took over", "music"); } }).catch(() => {}).finally(() => M.inflight = false);
+}
+function drawViz(){ const c = $("#viz"); if (!c.offsetParent) return; const w = c.width = c.clientWidth * devicePixelRatio, h = c.height = 70 * devicePixelRatio, g = c.getContext("2d"), n = 48, bw = w / n;
+  if (M.flash > .05) { g.fillStyle = css(palColor(M.t), M.flash * .25); g.fillRect(0, 0, w, h); }
+  for (let i = 0; i < n; i++) { const v = band(40 * Math.pow(2, i / n * 8), 40 * Math.pow(2, (i + 1) / n * 8)); g.fillStyle = css(palColor(i / n + M.t * .2), .9); g.fillRect(i * bw + 1, h - v * h, bw - 2, v * h); } }
+navigator.mediaDevices?.addEventListener?.("devicechange", listInputs);
+
+/* =================== SETTINGS =================== */
+function renderSettings(){
+  const el = $("#settingsBody");
+  if (BACKEND === "cloud") {
+    el.innerHTML = `<div class="head"><h2>Govee account</h2></div><div class="list glass">
+      <div class="row"><span class="mid t1">API key</span><span class="val num">${Cloud.KEY ? "••••" + Cloud.KEY.slice(-4) : "none"}</span></div>
+      <button class="row link" id="stReload"><span class="mid t1">Refresh lamps &amp; scenes</span></button>
+      <button class="row link" id="stChange"><span class="mid t1">Change API key</span></button>
+      <button class="row danger" id="stOut"><span class="mid t1">Remove key from this device</span></button></div>
+      <div class="head"><h2>Saved looks</h2></div><div class="list glass">${Cloud.LOOKS.length ? Cloud.LOOKS.map(l => `<div class="row"><span class="mid t1">${esc(l.name)}</span><button class="val" data-dellook="${esc(l.id)}" style="color:#ff6961">Delete</button></div>`).join("") : `<div class="empty">Save a look from Themes and it appears here.</div>`}</div>
+      <div class="head"><h2>About</h2></div><div class="list glass info">This app talks to your lamps through <b>Govee's cloud</b>, so it works anywhere, but each tap takes a moment.<br><br><b>Schedules, effects, music sync and instant control</b> live on the home dashboard on the Mac.</div>
+      <div class="list glass" style="margin-top:12px"><a class="row link" href="http://Arefi-Macbook.local:8787/" style="text-decoration:none"><span class="mid t1">Open home dashboard (Mac)</span></a></div>`;
+    $("#stReload").onclick = async () => { hud("Refreshing…", "refresh"); try { Cloud.DEV = await Cloud.loadDevices(); Cloud.set("devCache", Cloud.DEV); await Cloud.loadScenes(true); await Cloud.sync(); hud("Up to date"); } catch (e) { hud(e.message, "xmark"); } };
+    $("#stChange").onclick = () => Cloud.showSetup();
+    $("#stOut").onclick = () => { if (confirm("Remove the Govee key from this device?")) { localStorage.removeItem("goveeKey"); Cloud.KEY = null; Cloud.showSetup(); } };
+    el.onclick = e => { const b = e.target.closest("[data-dellook]"); if (b && confirm("Delete this look?")) api("/api/moods/" + encodeURIComponent(b.dataset.dellook), {}, "DELETE"); };
+  } else {
+    const lan = S.devices.filter(d => d.via === "lan").length, cloud = S.devices.filter(d => d.via === "cloud").length, h = C.host || {};
+    el.innerHTML = `<div class="head"><h2>Connection</h2></div><div class="list glass">
+      <div class="row"><span class="mid"><div class="t1">Lamps</div><div class="t2">${lan} on the LAN · ${cloud} via cloud · ${S.devices.length - lan - cloud} offline</div></span></div>
+      <div class="row"><span class="mid"><div class="t1">On your phone</div><div class="t2">http://${esc(h.ip)}:${esc(h.port)} or http://Arefi-Macbook.local:${esc(h.port)}</div></span></div>
+      <a class="row link" href="https://abu3reefi.github.io/living-room-lights/" style="text-decoration:none"><span class="mid t1">Cloud app (works away from home)</span></a></div>
+      <div class="head"><h2>Your day</h2></div><div class="list glass">${C.routine.stages.map((s, i) => `<div class="row"><span class="mid"><div class="t1">${i + 1}. ${esc(s.name)}</div><div class="t2">${esc((mood(s.moodId) || {}).name || "")}${s.fade ? ` · ${s.fade} min fade` : ""}</div></span></div>`).join("")}</div>
+      <p class="fine" style="text-align:left">The stages come from Your Day themes. Edit them in <code>lights/themes.py</code>, or ask me to change the order, fades or themes.</p>
+      <div class="head"><h2>About</h2></div><div class="list glass info">Lamps with <b>LAN Control</b> on respond instantly and can run effects and music sync. Lamps on the cloud tag show <b>cloud</b> and take a moment.<br><br>Schedules run on the Mac, so it needs to stay on and awake.</div>`;
+  }
+}
 
 /* =================== render =================== */
 function render(){
   ambient();
+  $$(".local-only").forEach(x => x.hidden = BACKEND !== "local");
+  $$("#side .sub-music,#side .sub-room,#side .sub-timers").forEach(x => x.hidden = BACKEND !== "local");
+  $("#sideFoot").textContent = BACKEND === "local" ? `${S.devices.filter(lit).length} of ${S.devices.length} on` : "Govee cloud";
   if (busy) return;
   if (tab === "home") renderHome();
   if (tab === "themes") renderThemes();
   if (tab === "lamps") renderLamps();
-  if (tab === "scenes" && document.activeElement !== $("#sceneQ")) renderScenes();
-  if (tab === "settings") renderSettings();
+  if (tab === "fx" && document.activeElement !== $("#sceneQ")) renderScenes();
+  if (tab === "more") { if (sub === "timers" && !sheetOpen()) renderTimers(); if (sub === "music") renderMusic(); if (sub === "room") renderEditor(); if (sub === "settings") renderSettings(); }
 }
-
-
-/* =================== settings =================== */
-function renderSettings(){
-  $("#keyMask").textContent = KEY ? "••••" + KEY.slice(-4) : "none";
-  $("#looksList").innerHTML = LOOKS.length ? LOOKS.map(l => `<div class="row"><span class="mid t1">${esc(l.name)}</span><button class="val" data-dellook="${esc(l.id)}" style="color:#ff6961">Delete</button></div>`).join("")
-    : `<div class="empty">Save a look from the Themes tab and it will appear here.</div>`;
-}
-$("#looksList").onclick = e => { const b = e.target.closest("[data-dellook]"); if (b && confirm("Delete this look?")) api("/api/moods/" + encodeURIComponent(b.dataset.dellook), {}, "DELETE"); };
-$("#reload").onclick = async () => { hud("Refreshing…", "refresh"); try { DEV = await loadDevices(); store.set("devCache", DEV); await loadScenes(true); await syncStates(); hud("Up to date"); } catch (e) { hud(e.message, "xmark"); } };
-$("#changeKey").onclick = () => showSetup();
-$("#signOut").onclick = () => { if (!confirm("Remove the Govee key from this device?")) return; store.del("goveeKey"); KEY = null; showSetup(); };
-
-function renderSync(){
-  const el = $("#syncNote"); if (!el) return;
-  el.innerHTML = syncing ? `${icon("refresh", 'class="i spin" style="width:14px;height:14px"')} Updating…`
-    : lastSync ? `Govee cloud · updated ${new Date(lastSync).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}` : "";
-}
-
-/* =================== first run =================== */
-function showSetup(){ $("#setup").hidden = false; $("#keyIn").value = ""; $("#keyErr").textContent = ""; }
-$("#keyGo").onclick = async () => {
-  const k = $("#keyIn").value.trim();
-  if (!/^[0-9a-f-]{20,}$/i.test(k)) { $("#keyErr").textContent = "That doesn't look like a Govee API key."; return; }
-  $("#keyGo").disabled = true; $("#keyGo").textContent = "Connecting…"; $("#keyErr").textContent = "";
-  try {
-    DEV = await loadDevices(k);
-    if (!Object.keys(DEV).length) throw new Error("No lamps found on this Govee account");
-    KEY = k; store.set("goveeKey", k); store.set("devCache", DEV);
-    $("#setup").hidden = true; start();
-  } catch (e) { $("#keyErr").textContent = e.message; }
-  $("#keyGo").disabled = false; $("#keyGo").textContent = "Connect";
-};
-
-/* =================== boot =================== */
-async function start(){
-  build(); render();
-  try { DEV = await loadDevices(); store.set("devCache", DEV); }
-  catch (e) {
-    if (/accept the API key/.test(e.message)) { showSetup(); $("#keyErr").textContent = "Govee rejected the saved key. Please paste it again."; return; }
-    if (!Object.keys(DEV).length) return hud(e.message, "xmark");
-  }
-  build(); render();
-  syncStates();
-  loadScenes().then(() => { if (tab === "scenes") renderScenes(); });
-}
-(async () => {
-  try { CFG = await (await fetch("config.json", {cache: "no-cache"})).json(); } catch {}
-  if (!KEY) { showSetup(); build(); render(); return; }
-  start();
-})();
-// cloud state is fetched gently: every minute while the app is open, and whenever you come back to it
-setInterval(() => { if (!document.hidden && Date.now() - lastSync > 55e3) syncStates(); }, 10e3);
-document.addEventListener("visibilitychange", () => { if (!document.hidden && KEY && Date.now() - lastSync > 15e3) syncStates(); });
+go("home");
+B.boot();
+setInterval(() => { if (S.running.sleep && !busy && (tab === "home" || sub === "timers")) render(); }, 1000);  // tick the countdown
 </script>
 </body>
 </html>
