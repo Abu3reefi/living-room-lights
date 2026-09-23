@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-title" content="Lights">
 <meta name="theme-color" content="#07070b">
 <meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Living Room Lights</title>
@@ -472,6 +474,67 @@ main{display:block}
 .spin{animation:spin 1s linear infinite}
 .subtabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:14px -18px 0;padding:0 18px}
 .subtabs::-webkit-scrollbar{display:none}
+
+/* ============================================================
+   Typographic identity: Bricolage Grotesque + Space Mono, acid-lime for "on"
+   ============================================================ */
+:root{
+  --font:"Bricolage Grotesque",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --display:"Bricolage Grotesque",-apple-system,system-ui,sans-serif;
+  --rounded:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --mono:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --lime:#c8ff4d;--lime-ink:#1a2200;
+}
+body{font-family:var(--font);letter-spacing:-.005em;font-variation-settings:"opsz" 14,"wdth" 100}
+h1{font:800 44px/.95 var(--display);letter-spacing:-.035em;font-variation-settings:"opsz" 96,"wdth" 82}
+.eyebrow,.head small,.tile-tx span,.rbtn .rtx small,.pillb small,.chip,.stage,.sync,.fine,.alarm .d,.row .t2,.sh-head small,.art-tx small,.tabbar button,.side .foot,.edlamp .st,.hero-tx small{font-family:var(--mono)}
+.eyebrow{font-size:11px;letter-spacing:.18em;color:var(--lime)}
+.eyebrow::before{content:"// "}
+.head h2{font:700 12px/1.2 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:8px}
+.head h2::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--lime);transform:rotate(45deg);flex:none}
+.head button{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime)}
+.chip{font-size:12px;letter-spacing:.04em;height:34px}
+.chip.live{background:rgba(200,255,77,.16);color:var(--lime)}
+.rbtn{font:700 17px/1.1 var(--display);letter-spacing:-.02em;font-variation-settings:"wdth" 90}
+.rbtn .rtx small{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.rbtn.active{background:var(--lime);color:var(--lime-ink);box-shadow:0 12px 34px -14px rgba(200,255,77,.6)}
+.rbtn.active .ric{background:rgba(0,0,0,.14);color:var(--lime-ink)}
+.rbtn.active .rtx small{color:rgba(26,34,0,.65)}
+.rbtn.pressed{transform:scale(.96)}
+.rbtn .ric{transform:rotate(-8deg)}
+.hero-tx b{font:800 34px/.95 var(--display);letter-spacing:-.04em;font-variation-settings:"opsz" 96,"wdth" 78}
+.hero-tx small{font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-top:8px;opacity:.7}
+.hero-ic{transform:rotate(-10deg)}
+.hero.active{box-shadow:0 0 0 3px var(--lime),0 18px 50px -12px rgba(255,160,60,.55)}
+.hero .tick{background:var(--lime);color:var(--lime-ink)}
+.tile-tx b{font:700 17px/1.1 var(--display);letter-spacing:-.02em}
+.tile-tx span{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.tile.on{background:var(--on-bg)}
+.pillb{font:700 15px var(--display);letter-spacing:-.01em}
+.pillb.active{background:var(--lime);color:var(--lime-ink)}
+.art-tx b{font:800 20px/1 var(--display);letter-spacing:-.03em;font-variation-settings:"wdth" 85}
+.art-tx small{font-size:10.5px;letter-spacing:.04em;text-transform:none;line-height:1.35}
+.art.active{box-shadow:inset 0 0 0 2.5px var(--lime),0 14px 30px -18px rgba(0,0,0,.9)}
+.art.active .tick{background:var(--lime);color:var(--lime-ink)}
+.tabbar button{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+.tabbar button.on{color:var(--lime);background:rgba(200,255,77,.12)}
+.side button.on{color:var(--lime)}
+.side .brand{font:800 18px var(--display);letter-spacing:-.03em}
+.tchip{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.tchip.on{background:var(--lime);color:var(--lime-ink)}
+.seg button{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.bigval{font:800 64px/1 var(--display);letter-spacing:-.05em;font-variation-settings:"opsz" 96,"wdth" 80}
+.bigval span{font:700 20px var(--mono);letter-spacing:0}
+.hslider .lbl{font-family:var(--mono);font-size:15px}
+.sleepb b{font:700 24px var(--mono)}
+.alarm .t{font:400 44px/1 var(--mono);letter-spacing:-.04em}
+.fxb{font:800 22px/1 var(--display);letter-spacing:-.03em;font-variation-settings:"wdth" 80}
+.fxb small{font:400 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.sh-head b{font:800 22px/1.1 var(--display);letter-spacing:-.03em}
+.days button,.roundb,.circle-btn{font-family:var(--mono)}
+.hud{font-family:var(--mono);font-size:13px;letter-spacing:.04em}
+.hud .i{color:var(--lime)}
+.amb-veil::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.055) .8px,transparent .9px);background-size:22px 22px;pointer-events:none;mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 70%);-webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 70%)}
 </style>
 </head>
 <body>
@@ -846,7 +909,12 @@ const Cloud = {
     C = {...C, moods, routine: {stages}, room: this.CFG.room, zones: this.CFG.zoneNames, schedules: [], caps: {backend: "cloud"}};
     S = {devices, running: {}, lastMood: this.lastMood, stage: (stages.find(s => s.moodId === this.lastMood) || {}).id || null};
   },
-  targetIds(t){ return !t || t === "all" ? Object.keys(this.DEV) : t; },
+  targetIds(t){
+    if (!t || t === "all") return Object.keys(this.DEV);
+    const out = new Set();
+    for (const x of t) { if (String(x).startsWith("@")) S.devices.filter(d => d.zone === x.slice(1)).forEach(d => out.add(d.id)); else if (this.DEV[x]) out.add(x); }
+    return [...out];
+  },
   async api(path, body = {}, method = "POST"){
     let work = [], ids = [];
     const CAP = this.CAP;
@@ -1092,18 +1160,21 @@ function renderHome(){
   $("#chips").innerHTML = chips.join("");
   if (L.length) homeBri.setValue(avgBri(L));
 
-  $("#fullBright").classList.toggle("active", S.lastMood === "full");
+  const fullNow = S.devices.filter(lit).length > 0 && S.devices.filter(lit).every(d => d.state.mode === "white" && Math.abs(d.state.kelvin - 2700) <= 250 && d.state.brightness >= 95);
+  $("#fullBright").classList.toggle("active", S.lastMood === "full" || fullNow);
   // the remote: direct buttons for the things you do most, each showing its current state
   const ceil = zoneDevs(ZONES.find(z => z.key === "ceiling")), floor = S.devices.filter(d => d.zone !== "ceiling");
   const ceilOn = ceil.some(lit), floorOn = floor.some(lit), allOn = S.devices.some(lit);
-  const rb = (id, ic, label, sub, cls = "") => `<button class="rbtn glass ${cls}" data-remote="${id}"><span class="ric">${icon(ic)}</span><span class="rtx">${label}<small>${sub}</small></span></button>`;
+  const L2 = S.devices.filter(lit), online = S.devices.filter(d => d.online);
+  const isDim = L2.length > 0 && avgBri(L2) <= 35, isWarm = L2.length > 0 && L2.every(d => d.state.mode === "white" && Math.abs(d.state.kelvin - 2700) <= 250);
+  const rb = (id, ic, label, sub, on) => `<button class="rbtn ${on ? "active" : "glass"}" data-remote="${id}"><span class="ric">${icon(ic)}</span><span class="rtx">${label}<small>${sub}</small></span></button>`;
   $("#remote").innerHTML = [
-    rb("ceiling", "spot", ceilOn ? "Ceiling off" : "Ceiling on", `${ceil.filter(lit).length} of ${ceil.length} on`, ceilOn ? "" : "off"),
-    rb("floor", "lamp", floorOn ? "Lamps off" : "Lamps on", `${floor.filter(lit).length} of ${floor.length} on`, floorOn ? "" : "off"),
-    rb("dim", "sun-low", "Dim", "everything to 30%"),
-    rb("warm", "flame", "Warm white", "2700 K, keep brightness"),
-    rb("allon", "bulb", "All on", `${S.devices.length} lamps`),
-    rb("alloff", "power", "All off", allOn ? "" : "everything is off", allOn ? "" : "off"),
+    rb("ceiling", "spot", "Ceiling", ceilOn ? `on · ${ceil.filter(lit).length} of ${ceil.length}` : "off", ceilOn),
+    rb("floor", "lamp", "Lamps", floorOn ? `on · ${floor.filter(lit).length} of ${floor.length}` : "off", floorOn),
+    rb("dim", "sun-low", "Dim", isDim ? `on · ${avgBri(L2)}%` : "to 30%", isDim),
+    rb("warm", "flame", "Warm white", isWarm ? "on · 2700 K" : "2700 K", isWarm),
+    rb("allon", "bulb", "All on", `${L2.length} of ${S.devices.length}`, online.length > 0 && L2.length === online.length),
+    rb("alloff", "power", "All off", L2.length ? "" : "everything off", L2.length === 0),
   ].join("");
   $("#stages").innerHTML = stages.filter(s => s.moodId !== "full").map(s => { const m = mood(s.moodId) || {}; const c = css(avgPreview(m));
     return `<button class="rbtn ${S.lastMood === s.moodId ? "active" : "glass"}" data-stage="${esc(s.id)}"><span class="ric" style="background:${c};color:${pale(avgPreview(m)) ? "rgba(60,30,0,.75)" : "#fff"}">${icon(mIcon(m))}</span><span class="rtx">${esc(s.name)}<small>${esc(m.name)}${s.fade ? ` · ${s.fade} min fade` : ""}</small></span></button>`; }).join("");
@@ -1121,6 +1192,7 @@ $("#stages").onclick = e => { const b = e.target.closest("[data-stage]"); if (!b
 $("#fullBright").onclick = () => { api("/api/mood/apply", {id: "full", fade: 1}); hud("Full Bright · 2700 K · 100%", "sun"); };
 $("#remote").onclick = e => {
   const b = e.target.closest("[data-remote]"); if (!b) return;
+  b.classList.add("pressed"); setTimeout(() => b.classList.remove("pressed"), 600);
   const ceil = ["@ceiling"], floor = S.devices.filter(d => d.zone !== "ceiling").map(d => d.id);
   ({
     ceiling: () => { const on = zoneDevs(ZONES.find(z => z.key === "ceiling")).some(lit); control(ceil, {on: !on}); hud(on ? "Ceiling off" : "Ceiling on", "spot"); },
