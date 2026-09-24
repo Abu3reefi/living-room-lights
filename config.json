@@ -127,6 +127,33 @@
  },
  "themes": [
   {
+   "id": "home",
+   "name": "Homecoming",
+   "icon": "door",
+   "blurb": "Lights come on one by one from the door — Door sun, Standing wood, the stairs, Aurora, the desk — then the ceiling all together.",
+   "builtin": true,
+   "states": {
+    "*": {
+     "on": true,
+     "brightness": 100,
+     "kelvin": 2700
+    }
+   },
+   "sequence": {
+    "order": [
+     "@door",
+     "@tvLeft",
+     "@stairs",
+     "@tvRight",
+     "@desk",
+     "@ceiling"
+    ],
+    "step": 1.4,
+    "fade": 1.2
+   },
+   "group": "day"
+  },
+  {
    "id": "full",
    "name": "Full Bright",
    "icon": "sun",
@@ -258,6 +285,31 @@
     "*": {
      "on": false
     }
+   },
+   "group": "day"
+  },
+  {
+   "id": "leaving",
+   "name": "Leaving",
+   "icon": "power",
+   "blurb": "Lights go out the other way: ceiling first, then lamp by lamp back towards the door.",
+   "builtin": true,
+   "states": {
+    "*": {
+     "on": false
+    }
+   },
+   "sequence": {
+    "order": [
+     "@ceiling",
+     "@desk",
+     "@tvRight",
+     "@stairs",
+     "@tvLeft",
+     "@door"
+    ],
+    "step": 0.9,
+    "fade": 0.8
    },
    "group": "day"
   },
@@ -1124,6 +1176,12 @@
  "routine": {
   "stages": [
    {
+    "id": "home",
+    "name": "Homecoming",
+    "moodId": "home",
+    "fade": 0
+   },
+   {
     "id": "morning",
     "name": "Morning",
     "moodId": "full",
@@ -1152,6 +1210,12 @@
     "name": "Lights out",
     "moodId": "off",
     "fade": 60
+   },
+   {
+    "id": "leaving",
+    "name": "Leaving",
+    "moodId": "leaving",
+    "fade": 0
    }
   ]
  }
