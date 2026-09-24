@@ -924,7 +924,13 @@ const Cloud = {
       ids = this.targetIds(body.targets); work = ids.map(id => this.applyTo(id, t)); this.lastMood = null;
     } else if (path === "/api/mood/apply") {
       const m = mood(body.id); ids = this.targetIds(body.targets);
-      work = S.devices.filter(d => ids.includes(d.id)).map(d => this.applyTo(d.id, this.moodTarget(m, d)));
+      const devs = S.devices.filter(d => ids.includes(d.id));
+      if (m.sequence && (!body.targets || body.targets === "all")) {
+        const seen = new Set(), groups = [];
+        for (const entry of m.sequence.order || []) { const g = devs.filter(d => !seen.has(d.id) && (entry.startsWith("@") ? d.zone === entry.slice(1) : d.id === entry)); g.forEach(d => seen.add(d.id)); if (g.length) groups.push(g); }
+        const rest = devs.filter(d => !seen.has(d.id)); if (rest.length) { const at = groups.findIndex(g => g.every(d => d.zone === "ceiling")); groups.splice(at < 0 ? groups.length : at, 0, rest); }
+        work = groups.map((g, i) => sleep(i * (m.sequence.step || 1.2) * 1000).then(() => Promise.all(g.map(d => this.applyTo(d.id, this.moodTarget(m, d))))));
+      } else work = devs.map(d => this.applyTo(d.id, this.moodTarget(m, d)));
       this.lastMood = (!body.targets || body.targets === "all") ? m.id : null;
     } else if (path === "/api/routine/next" || path === "/api/routine/stage") {
       const stages = C.routine.stages, cur = stages.findIndex(s => s.moodId === this.lastMood);
@@ -957,7 +963,10 @@ const Cloud = {
     return {ok: true};
   },
   showSetup(msg = ""){ $("#setup").hidden = false; $("#keyIn").value = ""; $("#keyErr").textContent = msg; },
+  personalLink(){ return location.origin + location.pathname + "#k=" + encodeURIComponent(this.KEY || ""); },
   async boot(){
+    const mk = location.hash.match(/[#&]k=([^&]+)/);
+    if (mk) { this.set("goveeKey", decodeURIComponent(mk[1])); history.replaceState(null, "", location.pathname); }
     this.KEY = this.get("goveeKey"); this.DEV = this.get("devCache", {}); this.SCENES = this.get("sceneCache", {}); this.STATE = this.get("stateCache", {});
     this.NAMES = this.get("names", {}); this.LOOKS = this.get("looks", []);
     try { this.CFG = await (await fetch("config.json", {cache: "no-cache"})).json(); } catch { this.CFG = {zones: {}, layout: {}, names: {}, themes: [], zoneNames: {}, routine: {stages: []}}; }
@@ -966,7 +975,7 @@ const Cloud = {
       if (!/^[0-9a-f-]{20,}$/i.test(k)) { $("#keyErr").textContent = "That doesn't look like a Govee API key."; return; }
       $("#keyGo").disabled = true; $("#keyGo").textContent = "Connecting…"; $("#keyErr").textContent = "";
       try { const dev = await this.loadDevices(k); if (!Object.keys(dev).length) throw new Error("No lamps found on this Govee account");
-        this.DEV = dev; this.KEY = k; this.set("goveeKey", k); this.set("devCache", dev); $("#setup").hidden = true; this.start(); }
+        this.DEV = dev; this.KEY = k; this.set("goveeKey", k); this.set("devCache", dev); $("#setup").hidden = true; this.start(); hud("Connected — see Settings for a link that remembers this key", "check"); }
       catch (e) { $("#keyErr").textContent = e.message; }
       $("#keyGo").disabled = false; $("#keyGo").textContent = "Connect";
     };
@@ -1426,6 +1435,7 @@ function renderSettings(){
   if (BACKEND === "cloud") {
     el.innerHTML = `<div class="head"><h2>Govee account</h2></div><div class="list glass">
       <div class="row"><span class="mid t1">API key</span><span class="val num">${Cloud.KEY ? "••••" + Cloud.KEY.slice(-4) : "none"}</span></div>
+      <button class="row link" id="stLink"><span class="mid"><div class="t1">Copy my personal link</div><div class="t2">Opens straight in, no key to type. Add THIS link to your Home Screen.</div></span></button>
       <button class="row link" id="stReload"><span class="mid t1">Refresh lamps &amp; scenes</span></button>
       <button class="row link" id="stChange"><span class="mid t1">Change API key</span></button>
       <button class="row danger" id="stOut"><span class="mid t1">Remove key from this device</span></button></div>
@@ -1434,6 +1444,7 @@ function renderSettings(){
       <div class="list glass" style="margin-top:12px"><a class="row link" href="http://Arefi-Macbook.local:8787/" style="text-decoration:none"><span class="mid t1">Open home dashboard (Mac)</span></a></div>`;
     $("#stReload").onclick = async () => { hud("Refreshing…", "refresh"); try { Cloud.DEV = await Cloud.loadDevices(); Cloud.set("devCache", Cloud.DEV); await Cloud.loadScenes(true); await Cloud.sync(); hud("Up to date"); } catch (e) { hud(e.message, "xmark"); } };
     $("#stChange").onclick = () => Cloud.showSetup();
+    $("#stLink").onclick = async () => { const l = Cloud.personalLink(); try { await navigator.clipboard.writeText(l); hud("Link copied", "check"); } catch { prompt("Your personal link", l); } };
     $("#stOut").onclick = () => { if (confirm("Remove the Govee key from this device?")) { localStorage.removeItem("goveeKey"); Cloud.KEY = null; Cloud.showSetup(); } };
     el.onclick = e => { const b = e.target.closest("[data-dellook]"); if (b && confirm("Delete this look?")) api("/api/moods/" + encodeURIComponent(b.dataset.dellook), {}, "DELETE"); };
   } else {
