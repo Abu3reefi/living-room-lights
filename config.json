@@ -128,9 +128,9 @@
  "themes": [
   {
    "id": "home",
-   "name": "Homecoming",
+   "name": "Welcome Home",
    "icon": "door",
-   "blurb": "Lights come on one by one from the door — Door sun, Standing wood, the stairs, Aurora, the desk — then the ceiling all together.",
+   "blurb": "A 20-second show: every lamp flashes hello one by one from the door, blooms into colour, then rises to warm white at full.",
    "builtin": true,
    "states": {
     "*": {
@@ -139,6 +139,7 @@
      "kelvin": 2700
     }
    },
+   "show": "welcome",
    "sequence": {
     "order": [
      "@door",
@@ -312,6 +313,68 @@
     "fade": 0.8
    },
    "group": "day"
+  },
+  {
+   "id": "afterdark",
+   "name": "After Dark",
+   "icon": "heart",
+   "blurb": "Crimson strobes to open, then low reds and rose that breathe around the room, with a slow stroke of light every so often.",
+   "builtin": true,
+   "states": {
+    "@ceiling": {
+     "on": false
+    },
+    "@kitchen": {
+     "on": false
+    },
+    "@door": {
+     "on": true,
+     "brightness": 12,
+     "color": {
+      "r": 255,
+      "g": 10,
+      "b": 26
+     }
+    },
+    "@tvLeft": {
+     "on": true,
+     "brightness": 10,
+     "color": {
+      "r": 212,
+      "g": 0,
+      "b": 46
+     }
+    },
+    "@tvRight": {
+     "on": true,
+     "brightness": 14,
+     "color": {
+      "r": 255,
+      "g": 34,
+      "b": 102
+     }
+    },
+    "@desk": {
+     "on": true,
+     "brightness": 8,
+     "color": {
+      "r": 176,
+      "g": 0,
+      "b": 58
+     }
+    },
+    "@stairs": {
+     "on": true,
+     "brightness": 8,
+     "color": {
+      "r": 255,
+      "g": 74,
+      "b": 18
+     }
+    }
+   },
+   "show": "afterdark",
+   "group": "room"
   },
   {
    "id": "rainbowrow",

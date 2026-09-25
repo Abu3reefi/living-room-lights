@@ -416,6 +416,8 @@ main{display:block}
 .fx-stop{background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:var(--glass-shine)}
 .fx-stop small{color:var(--text2)}
 .fxb.live{outline:2.5px solid #fff}
+.fx-welcome::before{background:linear-gradient(115deg,#ff3b30,#ffd60a 25%,#30d158 40%,#0a84ff 55%,#ffcf8a 75%,#fff1d6);background-size:200% 100%;animation:chase 5s linear infinite}
+.fx-afterdark::before{background:radial-gradient(circle at 30% 70%,#ff0a2a,transparent 50%),radial-gradient(circle at 75% 30%,#b0005a,transparent 55%),#1a0006;animation:flicker 3.2s ease-in-out infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes chase{to{background-position:-250% 0}}
 @keyframes drift{to{transform:translate(8%,-6%) scale(1.1)}}
@@ -607,7 +609,13 @@ h1{font:800 44px/.95 var(--display);letter-spacing:-.035em;font-variation-settin
 <section class="page" id="p-fx" hidden>
   <div class="top"><div><div class="eyebrow">Animated</div><h1>Effects</h1></div></div>
   <div class="local-only">
-    <div class="fx-grid" style="margin-top:14px">
+    <div class="head" style="margin-top:18px"><h2>Shows</h2></div>
+    <div class="fx-grid">
+      <button class="fxb fx-welcome" data-fx="welcome" data-name="Welcome Home">Welcome Home<small>20 s · flashes, colour bloom, rise to 2700 K</small></button>
+      <button class="fxb fx-afterdark" data-fx="afterdark" data-name="After Dark">After Dark<small>strobes, then slow reds that breathe</small></button>
+    </div>
+    <div class="head"><h2>Effects</h2></div>
+    <div class="fx-grid">
       <button class="fxb fx-chase" data-fx="chase" data-name="Chase">Chase<small>Colour runs lamp to lamp around the room</small></button>
       <button class="fxb fx-cycle" data-fx="cycle" data-name="Rainbow">Rainbow<small>A slow wave across the room</small></button>
       <button class="fxb fx-party" data-fx="party" data-name="Party">Party<small>Random colour bursts</small></button>
@@ -737,7 +745,7 @@ const ZONES = [
   {key: "other", name: "Other", icon: "bulb", match: z => z === "other"},
 ];
 const ZONE_ORDER = ["door", "tvLeft", "tvRight", "desk", "kitchen", "ceiling", "stairs", "other"];
-const QUICK = ["golden", "cinema", "deepwork", "moonlight", "rainbowrow", "dinner"];
+const QUICK = ["afterdark", "golden", "cinema", "deepwork", "moonlight", "rainbowrow"];
 const SWATCHES = ["#ff3b30","#ff6a1a","#ff9f0a","#ffd60a","#b8f03c","#30d158","#00d8c0","#40c8ff","#0a84ff","#5e5ce6","#bf5af2","#ff2d92","#ff6482","#ffd1dc","#ffffff","#ffe0b5","#c8ffe6"];
 const TEMPS = [[2200,"Candle"],[2700,"Warm"],[3000,"Soft"],[4000,"Neutral"],[5000,"Cool"],[6500,"Day"]];
 
@@ -1191,7 +1199,7 @@ function renderHome(){
 
   const banners = [];
   if (S.running.music) banners.push(`<div class="banner glass"><span class="ic">${icon("music")}</span><div class="mid"><b>Music sync</b><small>${S.running.music.lamps.length} lamps</small></div><button data-stop="music">Stop</button></div>`);
-  if (S.running.effect) banners.push(`<div class="banner glass"><span class="ic">${icon("sparkles")}</span><div class="mid"><b>${esc({cycle: "Rainbow", party: "Party", candle: "Candle", chase: "Chase"}[S.running.effect.type] || "Effect")}</b><small>${S.running.effect.lamps.length} lamps</small></div><button data-stop="effect">Stop</button></div>`);
+  if (S.running.effect) banners.push(`<div class="banner glass"><span class="ic">${icon("sparkles")}</span><div class="mid"><b>${esc({cycle: "Rainbow", party: "Party", candle: "Candle", chase: "Chase", welcome: "Welcome Home", afterdark: "After Dark"}[S.running.effect.type] || "Effect")}</b><small>${S.running.effect.lamps.length} lamps</small></div><button data-stop="effect">Stop</button></div>`);
   $("#banners").innerHTML = banners.join("");
   $("#pills").innerHTML = QUICK.map(mood).filter(Boolean).map(m => `<button class="pillb ${S.lastMood === m.id ? "active" : "glass"}" data-theme="${esc(m.id)}"><span class="pdot" style="background:${css(avgPreview(m))}">${icon(mIcon(m))}</span><span>${esc(m.name)}</span></button>`).join("");
   $("#zoneTiles").innerHTML = ZONES.filter(z => zoneDevs(z).length).map(z => tileHTML(`data-zone="${z.key}"`, z.name, zoneDevs(z).map(d => d.id), z.icon)).join("");
@@ -1453,9 +1461,14 @@ function renderSettings(){
       <div class="row"><span class="mid"><div class="t1">Lamps</div><div class="t2">${lan} on the LAN · ${cloud} via cloud · ${S.devices.length - lan - cloud} offline</div></span></div>
       <div class="row"><span class="mid"><div class="t1">On your phone</div><div class="t2">http://${esc(h.ip)}:${esc(h.port)} or http://Arefi-Macbook.local:${esc(h.port)}</div></span></div>
       <a class="row link" href="https://abu3reefi.github.io/living-room-lights/" style="text-decoration:none"><span class="mid t1">Cloud app (works away from home)</span></a></div>
+      <div class="head"><h2>Automation triggers</h2></div><div class="list glass">
+      <div class="row"><span class="mid"><div class="t1">Homecoming</div><div class="t2">Runs only if the room is dark</div></span><button class="val" data-copy="http://${esc(h.ip)}:${esc(h.port)}/api/trigger/homecoming?token=${esc(C.triggerToken)}" style="color:var(--lime)">Copy URL</button></div>
+      <div class="row"><span class="mid"><div class="t1">Leaving</div><div class="t2">Runs only if something is on</div></span><button class="val" data-copy="http://${esc(h.ip)}:${esc(h.port)}/api/trigger/leaving?token=${esc(C.triggerToken)}" style="color:var(--lime)">Copy URL</button></div></div>
+      <p class="fine" style="text-align:left">Anything that can open a URL — a smart lock, an iPhone Shortcut, HomeKit — can call these. The token keeps strangers on the network out.</p>
       <div class="head"><h2>Your day</h2></div><div class="list glass">${C.routine.stages.map((s, i) => `<div class="row"><span class="mid"><div class="t1">${i + 1}. ${esc(s.name)}</div><div class="t2">${esc((mood(s.moodId) || {}).name || "")}${s.fade ? ` · ${s.fade} min fade` : ""}</div></span></div>`).join("")}</div>
       <p class="fine" style="text-align:left">The stages come from Your Day themes. Edit them in <code>lights/themes.py</code>, or ask me to change the order, fades or themes.</p>
       <div class="head"><h2>About</h2></div><div class="list glass info">Lamps with <b>LAN Control</b> on respond instantly and can run effects and music sync. Lamps on the cloud tag show <b>cloud</b> and take a moment.<br><br>Schedules run on the Mac, so it needs to stay on and awake.</div>`;
+    el.onclick = async e => { const b = e.target.closest("[data-copy]"); if (!b) return; try { await navigator.clipboard.writeText(b.dataset.copy); hud("Copied", "check"); } catch { prompt("Trigger URL", b.dataset.copy); } };
   }
 }
 
